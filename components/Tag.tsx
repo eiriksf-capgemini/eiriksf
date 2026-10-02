@@ -1,5 +1,21 @@
-export default function Tag({ hot, children }: { hot?: boolean; children: React.ReactNode }) {
-  return <span className={hot ? "tag tag-hot" : "tag"}>{children}</span>;
+export default function Tag({
+  hot,
+  onClick,
+  children,
+}: {
+  hot?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}) {
+  const className = hot ? "tag tag-hot" : "tag";
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={className}>
+        {children}
+      </button>
+    );
+  }
+  return <span className={className}>{children}</span>;
 }
 
 export function Tags({ items, hot = [] }: { items: readonly string[]; hot?: readonly string[] }) {
