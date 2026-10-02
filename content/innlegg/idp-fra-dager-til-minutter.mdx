@@ -1,0 +1,43 @@
+---
+title: "Fra dager til minutter: hva en Internal Developer Portal faktisk løser"
+date: 2026-09-18
+category: plattform
+tags: [Backstage, IDP, GitOps]
+excerpt: "Backstage selger seg selv på katalogen. Den egentlige verdien lå i templatene – og i å tvinge fram én måte å lage en applikasjon på."
+---
+
+Da vi startet arbeidet med en Internal Developer Portal var målet enkelt å formulere: syv utviklingsteam og over 50 applikasjoner skulle få ett sted å finne eierskap, dokumentasjon og operasjonell innsikt.
+
+## Katalogen er inngangen, ikke verdien
+
+Systemkatalogen i Backstage er det alle ser først. Den samlet informasjon fra Kubernetes, GitOps-konfigurasjon, GitHub, Azure DevOps og SonarQube i ett grensesnitt. Nyttig – men det er ikke der tiden spares.
+
+## Templates tvang fram én måte å gjøre ting på
+
+Den reelle gevinsten kom med selvbetjeningsmalene. En ny applikasjon betydde tidligere flere dager med koordinering: repo, pipeline, GitOps-konfig, Pull Requests mot riktige repoer. Med templates ble det:
+
+1. Fyll ut et skjema
+2. Godkjenn de genererte PR-ene
+3. Applikasjonen bygges og deployes til utviklingsmiljøet
+
+Under fem minutter, og – viktigere – identisk struktur hver gang.
+
+> Standardisering er ikke en bieffekt av selvbetjening. Det er forutsetningen.
+
+## Det som overrasket
+
+Scorecards. Å synliggjøre manglende dokumentasjon og konfigurasjon per applikasjon gjorde mer for etterlevelse enn noen retningslinje vi skrev.
+
+```yaml
+# catalog-info.yaml – minimum for å dukke opp i katalogen
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: claims-api
+  annotations:
+    backstage.io/kubernetes-id: claims-api
+spec:
+  type: service
+  owner: team-claims
+  lifecycle: production
+```

@@ -4,6 +4,14 @@ out
 *.log
 .DS_Store
 .env*
+*.tsbuildinfo
+.claude/scheduled_tasks.lock
+*.tmp.mjs
+
+# Generert av scripts/generate-theme-init.mjs (kjøres automatisk som
+# pre-hook før dev/build/typecheck) – ikke sjekk inn, alltid regenerert.
+lib/theme-init-asset.generated.ts
+public/theme-init.*.js
 
 # Beads / Dolt files (added by bd init)
 .dolt/

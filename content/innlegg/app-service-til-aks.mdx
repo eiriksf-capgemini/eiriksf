@@ -1,0 +1,23 @@
+---
+title: "Hvorfor vi flyttet 30 apper fra App Service til AKS"
+date: 2026-08-12
+category: plattform
+tags: [AKS, Migrering, Teknisk gjeld]
+excerpt: "Kostnad, standardisering og utvikleropplevelse. En ærlig gjennomgang av migreringen – inkludert de fem appene vi heller la ned."
+---
+
+Azure App Services er en god tjeneste. Likevel endte vi med å migrere over 30 applikasjoner til Azure Kubernetes Service. Her er hvorfor.
+
+## Tre drivere
+
+- **Standardisering.** Én utrullingsmodell (GitOps med ArgoCD) for alt.
+- **Kostnad.** Konsolidering av App Service Plans ga reelle besparelser.
+- **Utvikleropplevelse.** Selvbetjening i Backstage genererte Kubernetes- og ArgoCD-konfigurasjon automatisk.
+
+## Fem applikasjoner ble lagt ned
+
+En migrering er et godt tidspunkt for å spørre om noe fortsatt trengs. Fem applikasjoner ble sanert, og underliggende App Service Plans faset ut.
+
+## Observabilitet fulgte med på kjøpet
+
+Flyttingen tvang fram bedre instrumentering. Det var ikke målet, men det ble en av de viktigste gevinstene.
