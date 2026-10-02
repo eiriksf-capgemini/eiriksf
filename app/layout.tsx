@@ -10,7 +10,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: `${site.name} — ${site.handle}`, template: `%s — ${site.handle}` },
   description: site.description,
-  openGraph: { type: "website", locale: "nb_NO", siteName: site.handle },
+  openGraph: {
+    type: "website",
+    locale: "nb_NO",
+    siteName: site.handle,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: site.name }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

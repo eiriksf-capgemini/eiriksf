@@ -16,7 +16,7 @@ export type Job = {
 };
 
 export const profile = {
-  updated: "2026-09-10",
+  updated: "2026-10-02",
   intro:
     "Senior DevOps Engineer og Tech Lead med bred erfaring innen plattformutvikling, skyarkitektur, systemintegrasjon og Application Lifecycle Management.",
   about: [
@@ -168,6 +168,7 @@ export const jobs: Job[] = [
 ];
 
 export const certifications = [
+  { year: "2026", title: "GH-900: GitHub Foundations", by: "Pearson VUE" },
   { year: "2022", title: "Professional Scrum Master I", by: "Scrum.org" },
   { year: "2022", title: "SC-900 Security, Compliance & Identity", by: "Microsoft" },
   { year: "2021", title: "AZ-900 Azure Fundamentals", by: "Microsoft" },
