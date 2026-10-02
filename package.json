@@ -1,0 +1,41 @@
+{
+  "name": "eiriksf",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "generate:theme-init": "node scripts/generate-theme-init.mjs",
+    "predev": "pnpm run generate:theme-init",
+    "dev": "next dev",
+    "prebuild": "pnpm run generate:theme-init",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "pretypecheck": "pnpm run generate:theme-init",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "docker:build": "docker build -t eiriksf:latest .",
+    "docker:run": "docker run --rm -p 8080:8080 eiriksf:latest"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "next": "15.5.27",
+    "next-mdx-remote": "5.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.0",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.3.0",
+    "prettier": "^3.5.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5.8.0"
+  }
+}
