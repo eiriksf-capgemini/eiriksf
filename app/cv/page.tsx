@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Label from "@/components/Label";
+import SectorBars from "@/components/SectorBars";
 import { Tags } from "@/components/Tag";
 import {
   certifications,
@@ -49,6 +50,11 @@ export default function CvPage() {
           <span className="font-mono text-[12.5px] text-mute">oppdatert {profile.updated}</span>
         </div>
       </div>
+
+      <section className="mt-14">
+        <Label>Bransjer</Label>
+        <SectorBars />
+      </section>
 
       <div className="grid md:grid-cols-[1fr_280px] gap-16 mt-14">
         <div>
