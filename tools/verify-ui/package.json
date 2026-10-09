@@ -1,0 +1,14 @@
+{
+  "name": "verify-ui",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.12.1",
+  "description": "Frakoblet, egen manifest for UI-verifiseringsharnesset (pnpm verify:ui). Holdes utenfor rot-package.json med vilje slik at docker build (deps-steget) aldri ser denne avhengigheten og aldri laster ned en nettleser. Se README.md i denne mappen.",
+  "scripts": {
+    "install:browser": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "axe-core": "^4.10.0"
+  }
+}
