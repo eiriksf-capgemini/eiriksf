@@ -47,7 +47,7 @@ jobs:
         run: docker build -t eiriksf:ci .
 
   lighthouse:
-    name: Lighthouse performance
+    name: Lighthouse performance & accessibility
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -72,6 +72,18 @@ jobs:
       # an earlier CSP-hardening pass, not something to undo for one point).
       # 0.90 is a real, passing-today floor with headroom for normal CI
       # variance; treat 94/95 as the baseline to beat, not 95 as a promise.
+      #
+      # Same approach for categories:accessibility, gated at >=0.90: a local
+      # `lhci autorun` across all 5 collected URLs (3 runs each, see
+      # .lighthouserc.json) measured a floor of 0.93 (homepage, /cv,
+      # /innlegg) with /ki and the sampled post page at 0.96 — fully stable,
+      # no run-to-run variance observed. Known causes of the 0.93/0.96
+      # (not fixed here, tracked as follow-up): insufficient color-contrast
+      # ratio on some text; non-sequential heading order on /, /cv and
+      # /innlegg; and an aria-label on the site logo link that doesn't match
+      # its visible text (label-content-name-mismatch, informational only,
+      # zero score weight). 0.90 leaves ~3 points of headroom below the
+      # measured floor; it is not an aspirational 0.95+.
       - name: Lighthouse CI
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
