@@ -1,43 +1,10 @@
-/** Teknologiradar og eksperimenter for /ki. Rediger fritt. */
-
-export type RadarItem = { name: string; note: string };
-
-export const radar: { title: string; sub: string; items: RadarItem[] }[] = [
-  {
-    title: "Bruker",
-    sub: "i produksjon",
-    items: [
-      { name: "Claude Code", note: "agentisk utvikling" },
-      { name: "GitHub Copilot", note: "IDE" },
-      { name: "Backstage", note: "IDP" },
-      { name: "ArgoCD", note: "GitOps" },
-      { name: "External Secrets Operator", note: "secrets" },
-      { name: "Terraform / Bicep", note: "IaC" },
-    ],
-  },
-  {
-    title: "Tester",
-    sub: "eksperiment",
-    items: [
-      { name: "MCP-servere mot interne verktøy", note: "ki" },
-      { name: "KI-agenter i CI-pipelines", note: "ki" },
-      { name: "Crossplane", note: "plattform" },
-      { name: "Kyverno policy-as-code", note: "sikkerhet" },
-      { name: "OpenTelemetry end-to-end", note: "observabilitet" },
-    ],
-  },
-  {
-    title: "Følger med på",
-    sub: "radar",
-    items: [
-      { name: "Platform engineering-standarder", note: "CNCF" },
-      { name: "Lokale modeller på egen infrastruktur", note: "ki" },
-      { name: "Sikkerhet i agentiske systemer", note: "ki · sikkerhet" },
-      { name: "EU AI Act i praksis", note: "regulering" },
-      { name: "WebAssembly i Kubernetes", note: "runtime" },
-    ],
-  },
-];
+/**
+ * Eksperimenter og prinsipper for /ki.
+ *
+ * Teknologiradaren som tidligere lå her som `radar` er migrert til
+ * `content/radar.ts` som en flat, typet liste av blips (se den filen for
+ * datamodell og utvalgsfunksjoner). Rediger fritt.
+ */
 
 export const experiments = [
   {
