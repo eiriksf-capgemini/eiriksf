@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Label from "@/components/Label";
+import CompetenceSpans from "@/components/CompetenceSpans";
 import SectorBars from "@/components/SectorBars";
 import { Tags } from "@/components/Tag";
 import {
   certifications,
-  competence,
   education,
   jobs,
   languages,
   profile,
   type Job,
 } from "@/content/cv";
-import { formatSpans } from "@/lib/cv";
+import { careerStart } from "@/lib/cv";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: "CV", description: profile.intro };
@@ -103,15 +103,10 @@ export default function CvPage() {
           />
           <div className="mb-10">
             <Label>Områder</Label>
-            {competence.map((c) => (
-              <div
-                key={c.name}
-                className="flex justify-between gap-3 font-mono text-xs py-[7px] border-t border-line"
-              >
-                <span>{c.name}</span>
-                <span className="text-accent-text whitespace-nowrap">{formatSpans(c.spans)}</span>
-              </div>
-            ))}
+            <CompetenceSpans />
+            <p className="font-mono text-[11px] text-mute mt-2.5 leading-[1.5]">
+              {careerStart.slice(0, 4)} → nå. Fylt strek = i bruk nå.
+            </p>
           </div>
           <div className="mb-10">
             <Label>Språk</Label>
