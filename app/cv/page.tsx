@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Label from "@/components/Label";
 import { Tags } from "@/components/Tag";
 import {
-  areas,
   certifications,
+  competence,
   education,
   jobs,
   languages,
   profile,
   type Job,
 } from "@/content/cv";
+import { formatSpans } from "@/lib/cv";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: "CV", description: profile.intro };
@@ -86,20 +87,23 @@ export default function CvPage() {
         </div>
 
         <aside>
-          <Block title="Sertifiseringer" items={certifications} />
-          <Block title="Utdanning" items={education} />
+          <Block
+            title="Sertifiseringer"
+            items={certifications.map((c) => ({ ...c, when: c.date.slice(0, 4) }))}
+          />
+          <Block
+            title="Utdanning"
+            items={education.map((e) => ({ ...e, when: e.to.slice(0, 4) }))}
+          />
           <div className="mb-10">
             <Label>Områder</Label>
-            {areas.map((a) => (
+            {competence.map((c) => (
               <div
-                key={a.name}
-                className="flex justify-between font-mono text-xs py-[7px] border-t border-line"
+                key={c.name}
+                className="flex justify-between gap-3 font-mono text-xs py-[7px] border-t border-line"
               >
-                <span>{a.name}</span>
-                <span className="text-accent-text tracking-[-1px]" aria-label={`${a.level} av 5`}>
-                  {"●".repeat(a.level)}
-                  {"○".repeat(5 - a.level)}
-                </span>
+                <span>{c.name}</span>
+                <span className="text-accent-text whitespace-nowrap">{formatSpans(c.spans)}</span>
               </div>
             ))}
           </div>
@@ -158,14 +162,14 @@ function Block({
   items,
 }: {
   title: string;
-  items: { year: string; title: string; by: string }[];
+  items: { when: string; title: string; by: string }[];
 }) {
   return (
     <div className="mb-10">
       <Label>{title}</Label>
       {items.map((it) => (
         <div key={it.title} className="py-2.5 border-t border-line">
-          <div className="font-mono text-xs text-accent-text font-semibold">{it.year}</div>
+          <div className="font-mono text-xs text-accent-text font-semibold">{it.when}</div>
           <div className="text-[15.5px] font-semibold">{it.title}</div>
           <div className="text-[13px] text-mute">{it.by}</div>
         </div>
