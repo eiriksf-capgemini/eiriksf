@@ -95,8 +95,12 @@ export const profile = {
   hot: ["Kubernetes", "GitOps", "Backstage", "Azure"],
 };
 
-export const stats = [
-  { num: "15", sup: "+", desc: "år i bransjen" },
+/**
+ * Nøkkeltall som ikke kan utledes. "År i bransjen" står bevisst ikke her –
+ * det tallet regnes ut fra jobbdatoene i lib/cv.ts, slik at det ikke kan bli
+ * stående og ruste mens tidslinjen rett ved siden av viser noe annet.
+ */
+export const statsFigures = [
   { num: "50", sup: "+", desc: "applikasjoner på plattform" },
   { num: "7", sup: "", desc: "utviklingsteam betjent" },
   { num: "<5", sup: "min", desc: "onboarding av ny app" },
