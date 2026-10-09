@@ -4,3 +4,9 @@ out
 .git
 *.md
 .env*
+# UI-verifiseringsharnesset (esf-07k.1): egen package.json/pnpm-lock.yaml
+# utenfor rot-manifestet, med en nettleser-binær som kan ligge lokalt i
+# tools/verify-ui/node_modules. Skal aldri inn i Docker-bygget – verken
+# avhengigheten eller nettleseren trengs for å bygge/serve den statiske
+# eksporten.
+tools/verify-ui

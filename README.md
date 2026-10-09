@@ -64,6 +64,21 @@ Slug = filnavn. Innleggene sorteres på `date`.
 - Farger og fonter: tokens øverst i `app/globals.css`
 - Tema: lagres i `localStorage` (`theme`), følger systemet første gang
 
+## UI-verifiseringsharness
+
+For aksepttester som krever en ekte nettleser (scrollbredde, aksesibilitetstre,
+axe-core, tastaturnavigasjon, elementgeometri), se `tools/verify-ui/README.md`:
+
+```bash
+pnpm build
+pnpm run verify:ui:setup            # én gang
+pnpm run verify:ui:install-browser  # én gang
+pnpm verify:ui -- --path /cv/ --viewport 360x800
+```
+
+Avhengighetene ligger i en egen manifest utenfor rot-`package.json` og i
+`.dockerignore`, slik at `docker build` aldri laster ned en nettleser.
+
 ## Videre arbeid (forslag)
 
 - Legg `public/cv.pdf` (eksport fra CV-malen) så nedlastingsknappen virker
