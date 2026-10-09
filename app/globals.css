@@ -9,11 +9,18 @@
   --bg-2: #ece8e0;
   --ink: #17191c;
   --ink-2: #4b4f56;
-  --mute: #7c8088;
+  /* #7c8088 var 3.55:1 på --bg og 3.24:1 på --bg-2 – under AA for normal
+     tekst. #5f636b gir 5.40:1 / 4.93:1, og 4.67:1 selv over accent-soft-
+     tonen. Fortsatt tydelig lysere enn --ink-2, så hierarkiet består.
+     (esf-al3; esf-ca6 fikset bare oransjen og rørte ikke nøytralen.) */
+  --mute: #5f636b;
   --line: #d9d3c8;
   --line-2: #c7c0b3;
   --accent: #e4601a;
-  --accent-ink: #ffffff;
+  /* Hvit på --accent var 3.51:1. I stedet for å dempe merkevarefargen
+     snus teksten til nesten-svart: 5.02:1 på samme oransje. Mørk modus
+     gjorde allerede dette. (esf-al3) */
+  --accent-ink: #17191c;
   --accent-soft: rgba(228, 96, 26, 0.1);
   /* Darker variant of --accent for use as a *text* color on --bg/--bg-2 (and
      the --accent-soft tint on top of them). #e4601a only reaches ~3.1:1 on
@@ -28,7 +35,8 @@
   --bg-2: #1a1c1f;
   --ink: #ece8e0;
   --ink-2: #b9b4ab;
-  --mute: #7e8189;
+  /* 4.77:1 på --bg, men bare 4.38:1 på --bg-2. #868992 gir 5.32:1 / 4.88:1. */
+  --mute: #868992;
   --line: #2a2d32;
   --line-2: #3a3e45;
   --accent: #ff7a2f;
