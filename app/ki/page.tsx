@@ -43,7 +43,8 @@ export default function KiPage() {
               <span className="font-mono text-xs uppercase tracking-[0.12em]">
                 {RING_DISPLAY[ring].title}
               </span>
-              <span className="font-mono text-[11px] opacity-80">{RING_DISPLAY[ring].sub}</span>
+              {/* Ikke opacity her: 80 % på --accent-ink gir ~3,5:1 på oransje (esf-al3). */}
+              <span className="font-mono text-[11px]">{RING_DISPLAY[ring].sub}</span>
             </div>
             <ul className="py-1.5">
               {items.map((blip) => (
