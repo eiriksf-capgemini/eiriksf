@@ -7,7 +7,7 @@
  * oppdrag pluss hull blir nøyaktig karrierespennet. Visningen av varighet
  * per jobb på /cv teller inklusivt – det er en bevisst forskjell.
  */
-import { jobs, SECTORS, type Competence, type Job, type Sector } from "@/content/cv";
+import { jobs, SECTORS, statsFigures, type Competence, type Job, type Sector } from "@/content/cv";
 
 const MND = ["jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des"];
 
@@ -104,3 +104,12 @@ export const sectorsByTime = SECTORS.map((sector) => ({
 /** Måneder mellom oppdrag – jobbskifter som ikke faller på samme måned. */
 export const gapMonths =
   careerMonths - Object.values(sectorMonths).reduce((sum, m) => sum + m, 0);
+
+/** Hele år i bransjen, utledet fra første jobb. Én kilde, to visningssteder. */
+export const careerYears = Math.floor(careerMonths / 12);
+
+/** Nøkkeltall for forsiden. Første tall utledes, resten er innhold. */
+export const stats = [
+  { num: String(careerYears), sup: "+", desc: "år i bransjen" },
+  ...statsFigures,
+];

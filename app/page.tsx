@@ -3,7 +3,8 @@ import Label from "@/components/Label";
 import PostRow from "@/components/PostRow";
 import { Tags } from "@/components/Tag";
 import { getAllPosts } from "@/lib/posts";
-import { profile, stats } from "@/content/cv";
+import { profile } from "@/content/cv";
+import { careerYears, stats } from "@/lib/cv";
 import { site } from "@/lib/site";
 
 export default function Home() {
@@ -48,8 +49,8 @@ export default function Home() {
             </em>
           </h1>
           <p className="text-[21px] leading-[1.5] text-ink mt-6 max-w-[44ch]">
-            Plattformutvikling, Kubernetes, GitOps og utviklerplattformer. 15+ år i helse, energi,
-            offentlig sektor og forsikring.
+            Plattformutvikling, Kubernetes, GitOps og utviklerplattformer. {careerYears}+ år i
+            helse, energi, offentlig sektor og forsikring.
           </p>
           <div className="flex gap-3 mt-8">
             <Link className="btn btn-primary" href="/cv/">
