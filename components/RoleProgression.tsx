@@ -27,9 +27,12 @@ export default function RoleProgression() {
 
   return (
     <div>
-      {/* Plottet krever navngitte baner for å bety noe. Under md er det
-          ikke plass til dem, så der vises listen under i stedet. */}
-      <div className="hidden md:grid md:grid-cols-[230px_1fr] gap-2 md:gap-6">
+      {/* Plottet krever navngitte baner for å bety noe. Under md er det ikke
+          plass til dem, så der vises listen under i stedet. Samme gjelder på
+          papir: en A4 er smalere enn md-bruddpunktet, og listen er uansett
+          mer nyttig enn en abstrakt trapp i en utskrift. print:-variantene
+          gjør det til et valg i stedet for en bieffekt av bruddpunktet. */}
+      <div className="hidden md:grid print:!hidden md:grid-cols-[230px_1fr] gap-2 md:gap-6">
         <div style={{ height: lanes.length * LANE_H }}>
           {lanes.map((l) => (
             <div
@@ -59,7 +62,7 @@ export default function RoleProgression() {
             return (
               <div
                 key={`c-${j.org}-${j.from}`}
-                className="absolute w-px bg-accent/40"
+                className="chart-bar absolute w-px bg-accent/40"
                 style={{ left: `${pos(j.from)}%`, top: Math.min(a, b), height: Math.abs(a - b) }}
               />
             );
@@ -68,7 +71,7 @@ export default function RoleProgression() {
             <div
               key={`${j.org}-${j.from}`}
               className={[
-                "absolute h-[7px] rounded-sm",
+                "chart-bar absolute h-[7px] rounded-sm",
                 j.to === null ? "bg-accent" : "bg-accent/70",
               ].join(" ")}
               style={{
@@ -83,7 +86,7 @@ export default function RoleProgression() {
 
       {/* Samme innhold som plottet: synlig liste på mobil, tekstekvivalent
           for skjermlesere på større skjermer. */}
-      <ol className="md:sr-only flex flex-col gap-2">
+      <ol className="md:sr-only print:not-sr-only flex flex-col gap-2">
         {chrono.map((j) => (
           <li key={`t-${j.org}-${j.from}`} className="text-[14px] leading-[1.45] border-t border-line pt-2">
             <span className="font-mono text-[11.5px] text-mute">

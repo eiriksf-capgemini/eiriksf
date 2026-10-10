@@ -33,7 +33,7 @@ export default function CompetenceSpans() {
                   <span
                     key={s.from}
                     className={[
-                      "absolute inset-y-0 rounded-sm",
+                      "chart-bar absolute inset-y-0 rounded-sm",
                       s.to === null ? "bg-accent" : "bg-accent/55",
                     ].join(" ")}
                     style={{

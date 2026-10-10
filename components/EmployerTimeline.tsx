@@ -88,7 +88,7 @@ export default function EmployerTimeline() {
               <div className="relative h-2.5 rounded-sm bg-bg-2">
                 <div
                   aria-hidden
-                  className={["absolute inset-y-0 rounded-sm", current ? "bg-accent" : "bg-accent/65"].join(" ")}
+                  className={["chart-bar absolute inset-y-0 rounded-sm", current ? "bg-accent" : "bg-accent/65"].join(" ")}
                   style={{
                     left: `${pos(emp.from)}%`,
                     width: `${Math.max((emp.months / careerMonths) * 100, 1.2)}%`,

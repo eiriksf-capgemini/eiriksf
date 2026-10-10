@@ -238,3 +238,44 @@ h3 {
 .prose-post th {
   @apply font-mono text-[11.5px] uppercase tracking-[0.12em] text-mute;
 }
+
+/* ---------- Utskrift ----------
+   /cv er bygget av søyler som bare er bakgrunnsfarge, og nettlesere dropper
+   bakgrunnsgrafikk ved utskrift som standard. Uten dette blir hver graf en
+   tom stripe. Søylene får derfor ramme i tillegg – rammer skrives alltid ut –
+   og print-color-adjust ber om fargen der brukeren tillater det. */
+@media print {
+  .chart-bar {
+    border: 0.7pt solid #555 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    min-height: 4pt;
+  }
+  /* Hele toppen og bunnen er navigasjon og temabryter – ingenting av det
+     betyr noe på papir, og navnet står uansett i h1 rett under. */
+  header,
+  footer,
+  details {
+    display: none !important;
+  }
+  /* Lenken til PDF-en må kunne leses på papir */
+  /* Domenet står også i lib/site.ts; her må det være en literal fordi CSS
+     ikke kan lese derfra. Uten det blir lenken "/cv.pdf" på papir. */
+  a[href$=".pdf"]::after {
+    content: " (eiriksf.no" attr(href) ")";
+    font-family: var(--font-mono), monospace;
+    font-size: 9pt;
+  }
+  .wrap {
+    max-width: none;
+    padding: 0;
+  }
+  section,
+  li,
+  tr {
+    break-inside: avoid;
+  }
+  a {
+    text-decoration: none;
+  }
+}
