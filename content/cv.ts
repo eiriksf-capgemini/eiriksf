@@ -69,7 +69,12 @@ export type Job = {
 };
 
 export const profile = {
+  /** Når innholdet på denne siden sist ble gjennomgått. */
   updated: "2026-10-02",
+  /** Når public/cv.pdf sist ble byttet ut. Selve PDF-en har ingen dato i seg,
+   *  så siden må oppgi den – ellers lover nedlastingen en ferskhet vi ikke
+   *  kan stå inne for (esf-hnd.9). Oppdater denne når PDF-en byttes. */
+  pdfUpdated: "2026-10-02",
   intro:
     "Senior DevOps Engineer og Tech Lead med bred erfaring innen plattformutvikling, skyarkitektur, systemintegrasjon og Application Lifecycle Management.",
   about: [
