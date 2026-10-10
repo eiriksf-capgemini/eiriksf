@@ -18,7 +18,8 @@
     "docker:run": "docker run --rm -p 8080:8080 eiriksf:latest",
     "verify:ui:setup": "pnpm --dir tools/verify-ui install",
     "verify:ui:install-browser": "pnpm --dir tools/verify-ui run install:browser",
-    "verify:ui": "node tools/verify-ui/verify.mjs"
+    "verify:ui": "node tools/verify-ui/verify.mjs",
+    "radar:capture": "node scripts/radar-capture.mjs"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
