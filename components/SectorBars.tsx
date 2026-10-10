@@ -43,7 +43,7 @@ export default function SectorBars() {
               <div
                 aria-hidden
                 className={[
-                  "h-2.5 rounded-sm",
+                  "chart-bar h-2.5 rounded-sm",
                   r.muted ? "bg-line-2" : "bg-accent",
                 ].join(" ")}
                 style={{ width: `${(r.months / widest) * 100}%` }}

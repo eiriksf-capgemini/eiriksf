@@ -73,7 +73,7 @@ export default function CredentialMarkers() {
               <div className="absolute inset-x-0 top-[5px] h-px bg-line" />
               {m.at && spanStart !== null && (
                 <div
-                  className="absolute top-[3px] h-[3px] rounded-sm bg-accent/30"
+                  className="chart-bar absolute top-[3px] h-[3px] rounded-sm bg-accent/30"
                   style={{ left: `${spanStart}%`, width: `${Math.max(pos(m.at) - spanStart, 0.6)}%` }}
                 />
               )}
@@ -84,7 +84,7 @@ export default function CredentialMarkers() {
               )}
               <span
                 className={[
-                  "absolute top-0 w-2.5 h-2.5 rounded-full",
+                  "chart-bar absolute top-0 w-2.5 h-2.5 rounded-full",
                   before ? "bg-line-2" : "bg-accent",
                 ].join(" ")}
                 style={before ? { left: 0 } : { left: `calc(${pos(m.at!)}% - 5px)` }}
