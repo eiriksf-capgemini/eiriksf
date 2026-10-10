@@ -16,7 +16,7 @@ jobs:
   publish-ghcr:
     name: Publish image to GHCR
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -48,23 +48,25 @@ jobs:
             type=raw,value=latest
             type=sha,prefix=sha-,format=short
 
-      # linux/amd64,linux/arm64: published image must run natively on either
-      # host arch (esf-07k.7). The arm64 leg builds under QEMU emulation on
-      # this amd64 runner, so it's the slow one: a local
-      # `docker buildx build --platform linux/amd64,linux/arm64 --no-cache`
-      # comparison (Apple Silicon host, so amd64 was the emulated leg there)
-      # measured the install+build stage at ~71s native vs ~161s emulated,
-      # i.e. roughly 2.3x slower under QEMU (the `next build` compile step
-      # alone was ~3.5x slower). That's a real tax, but this job only runs
-      # on push to main (not on pull_request), so it never gates PR
-      # feedback, and 15 timeout-minutes leaves ample headroom even doubled.
-      # Decision: publish both platforms unconditionally rather than
-      # splitting PR-vs-main, since there's no PR run of this job to protect.
+      # linux/amd64,linux/arm64: det publiserte imaget må kunne kjøres
+      # direkte på begge vertsarkitekturer (esf-07k.7). arm64-leggen bygges
+      # under QEMU-emulering på en amd64-runner, og det er den dyre delen.
+      #
+      # Første forsøk satte timeout-minutes: 15 basert på en lokal måling på
+      # Apple Silicon (~2,3x for den emulerte leggen). Den målingen var for
+      # optimistisk: på en ekte amd64-runner ble jobben AVBRUTT på 15 minutter
+      # uten å bli ferdig. Derfor 45 minutter og buildx-cache mot GitHub
+      # Actions-cachen, så bare første kjøring betaler full pris.
+      #
+      # Jobben kjører bare på push til main og har ingen pull_request-trigger,
+      # så den blokkerer ingen PR-tilbakemelding uansett hvor lang den er.
       - name: Build and push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
