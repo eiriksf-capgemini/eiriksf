@@ -1,4 +1,8 @@
-# syntax=docker/dockerfile:1.7
+# Ingen syntax=-direktiv med vilje: det får BuildKit til å hente
+# docker/dockerfile-imaget fra Docker Hub anonymt før bygget i det hele tatt
+# starter, og et 504 derfra gjorde Docker-jobben rød to kjøringer på rad
+# (esf-07k.5). Den innebygde frontenden dekker alt denne filen bruker,
+# inkludert COPY --chmod.
 
 # ---------- 1. Avhengigheter ----------
 FROM node:22-alpine AS deps
