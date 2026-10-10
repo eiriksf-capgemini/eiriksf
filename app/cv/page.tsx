@@ -39,11 +39,12 @@ export default function CvPage() {
       <div className="grid md:grid-cols-[1fr_280px] gap-16 mt-14">
         <div>
           <Label>Om profilen</Label>
-          {profile.about.map((p) => (
-            <p key={p.slice(0, 30)} className="text-ink-2 text-[15.5px] mb-4 max-w-[68ch]">
-              {p}
-            </p>
-          ))}
+          {/* Bare ingressen her. De to andre avsnittene står i PDF-en – siden
+              skal ikke konkurrere med dokumentet (esf-hnd.7). */}
+          <p className="text-ink-2 text-[15.5px] mb-5 max-w-[68ch]">{profile.about[0]}</p>
+          <a className="btn" href="/cv.pdf" download>
+            ↓ Last ned full CV (PDF)
+          </a>
         </div>
 
         <aside>

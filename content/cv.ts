@@ -59,6 +59,9 @@ export type Job = {
   to: string | null;
   sector: Sector;
   roleLevel: RoleLevel;
+  /** Én setning. Dette er alt /cv viser i utgangspunktet – resten ligger i
+   *  utvidelsen og i PDF-en. Skriv den kort nok til å stå på én linje. */
+  oneLine: string;
   summary: string[];
   tags: string[];
   /** Vis i kompakt liste nederst i stedet for full oppføring */
@@ -114,6 +117,7 @@ export const jobs: Job[] = [
     to: null,
     sector: "konsulent",
     roleLevel: "teknisk-ledelse",
+    oneLine: "Rådgivning på plattform, DevOps og utviklerplattformer.",
     summary: [
       "Rådgivning innen plattformutvikling, DevOps-transformasjon og utviklerplattformer.",
     ],
@@ -126,6 +130,7 @@ export const jobs: Job[] = [
     to: "2026-07",
     sector: "finans",
     roleLevel: "senior-utvikling",
+    oneLine: "Plattformteam for SAIL (AKS, ArgoCD, Backstage-IDP).",
     summary: [
       "Medlem av plattformteamet med ansvar for SAIL, Instechs Kubernetes-baserte applikasjonsplattform (AKS, ArgoCD, CI/CD, observabilitet) som understøttet syv utviklingsteam og 50+ applikasjoner.",
       "Etablerte en selvhostet Backstage-basert Internal Developer Portal som reduserte onboarding av nye applikasjoner fra flere dager til under fem minutter. Utviklet templates som automatiserte opprettelse av repoer, GitOps-konfigurasjon og pipelines, samt egne plugins og scorecards.",
@@ -153,6 +158,7 @@ export const jobs: Job[] = [
     to: "2023-08",
     sector: "energi",
     roleLevel: "teknisk-ledelse",
+    oneLine: "Teknisk retning for autonomt produktteam på Radix.",
     summary: [
       "Teknisk retning for et autonomt produktteam på syv (UX, frontend, backend, DevOps) med ansvar for forretningskritiske applikasjoner på Equinors Kubernetes-baserte Radix-plattform.",
       "Designet og implementerte Azure-basert infrastruktur, etablerte tekniske standarder og ledet arbeidet med å standardisere og automatisere bygge-, test- og utrullingsprosesser – resultatet var helautomatiserte CI/CD-pipelines for teamets applikasjoner.",
@@ -167,6 +173,7 @@ export const jobs: Job[] = [
     to: "2021-08",
     sector: "offentlig",
     roleLevel: "senior-utvikling",
+    oneLine: "Digitale møtebøker for byrådet (SharePoint, Graph).",
     summary: [
       "Papirløs Forvaltning: automatiserte etablering og vedlikehold av digitale møtebøker for byrådet gjennom integrasjon mellom SharePoint, Microsoft Graph API og OneNote. Løsningen håndterte fire til ti byrådsmøter per måned.",
       "En av to seniorutviklere med ansvar for arkitektur, løsningsdesign og prototyping. Rådgivning og videreutvikling av Microsoft 365-plattformen for 1 000–2 000 brukere.",
@@ -181,6 +188,7 @@ export const jobs: Job[] = [
     to: "2019-01",
     sector: "energi",
     roleLevel: "teknisk-ledelse",
+    oneLine: "Prediksjon av kraftproduksjon fra 39 vindturbiner.",
     summary: [
       "Datadrevet plattform for prediksjon og optimalisering av kraftproduksjon fra 39 vindturbiner i to nederlandske vindparker. Kombinerte SCADA-data fra Bazefield med værprognoser for bedre beslutningsstøtte i energihandel.",
       "Ansvar for arkitektur, integrasjonsdesign og databehandlingsflyt. Løsning basert på Python, mikrotjenester og SESAM.IO.",
@@ -195,6 +203,7 @@ export const jobs: Job[] = [
     sector: "konsulent",
     roleLevel: "utvikling",
     compact: true,
+    oneLine: "ALM-rådgivning og utvikling på SharePoint og C#.",
     summary: [
       "Rådgivning innen ALM og utviklingsprosesser (TFS), samt utvikling på SharePoint, C# og Microsoft 365.",
     ],
@@ -208,6 +217,7 @@ export const jobs: Job[] = [
     sector: "helse",
     roleLevel: "utvikling",
     compact: true,
+    oneLine: "ALM: automatiserte bygg, test og utrulling.",
     summary: [
       "Ansvar for Application Lifecycle Management: standardisering og automatisering av bygging, testing og utrulling. Systemadministrator for Nødjournalen. Konstituert seksjonsleder apr–okt 2015.",
     ],
@@ -221,6 +231,7 @@ export const jobs: Job[] = [
     sector: "helse",
     roleLevel: "koordinering",
     compact: true,
+    oneLine: "Meldingsløftet: meldingsutveksling, PKI og sertifikater.",
     summary: [
       "Meldingsløftet: kvalitetssikring av elektronisk meldingsutveksling mellom spesialist- og primærhelsetjenesten. PKI, sertifikathåndtering og meldingsstandarder.",
     ],
@@ -234,6 +245,7 @@ export const jobs: Job[] = [
     sector: "telekom",
     roleLevel: "drift",
     compact: true,
+    oneLine: "Døgnkontinuerlig overvåking av Telenors tjenesteplattform.",
     summary: [
       "Døgnkontinuerlig overvåking og feilhåndtering av Telenors tjenesteplattform. Spesialist på e-post/samhandling, webhosting og SSL-sertifikater.",
     ],
