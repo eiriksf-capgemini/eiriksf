@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Label from "@/components/Label";
 import PostFilter from "@/components/PostFilter";
 import { getAllPosts, getCategories } from "@/lib/posts";
@@ -23,9 +22,7 @@ export default function PostsPage() {
       </p>
 
       {/* Kategorier – klientside filter, aktiv kategori speiles i URL som ?kat= */}
-      <Suspense fallback={null}>
-        <PostFilter posts={posts} categories={cats} />
-      </Suspense>
+      <PostFilter posts={posts} categories={cats} />
     </div>
   );
 }

@@ -1,14 +1,24 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import PostEntry from "./PostEntry";
 import Tag from "./Tag";
 import type { PostMeta } from "@/lib/posts";
 
 const PARAM = "kat";
 
-/** Klientside kategori-filter for innleggslisten. Holder aktiv kategori i URL (?kat=) */
+/**
+ * Klientside kategori-filter for innleggslisten. Aktiv kategori speiles i
+ * URL-en som ?kat=.
+ *
+ * Leser bevisst IKKE useSearchParams: den tvinger Next til å hoppe over
+ * prerendering av dette undertreet, og med statisk eksport endte hele
+ * innleggslisten som tom HTML – usynlig for søkemotorer og for alle før
+ * hydrering, og den forårsaket et layouthopp når listen dukket opp.
+ * Siden eksporten uansett er én fil for alle query-strenger, kan ikke
+ * serveren vite kategorien. Derfor: render alt, og filtrer etter mount.
+ */
 export default function PostFilter({
   posts,
   categories,
@@ -18,23 +28,26 @@ export default function PostFilter({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [active, setActive] = useState<string | null>(null);
 
-  const requested = searchParams.get(PARAM);
-  const active = requested && categories.includes(requested) ? requested : null;
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get(PARAM);
+    setActive(requested && categories.includes(requested) ? requested : null);
+  }, [categories]);
 
   const setCategory = useCallback(
     (cat: string | null) => {
-      const params = new URLSearchParams(searchParams.toString());
+      setActive(cat);
+      const params = new URLSearchParams(window.location.search);
       if (cat) {
         params.set(PARAM, cat);
       } else {
         params.delete(PARAM);
       }
       const qs = params.toString();
-      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
-    [router, pathname, searchParams],
+    [router, pathname],
   );
 
   const visible = useMemo(
