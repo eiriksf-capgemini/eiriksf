@@ -22,7 +22,7 @@ COPY . .
 RUN pnpm build
 
 # ---------- 3. Runtime: kun nginx + statiske filer ----------
-FROM nginxinc/nginx-unprivileged:1.27-alpine-slim AS runtime
+FROM nginxinc/nginx-unprivileged:1.31-alpine-slim AS runtime
 COPY --chmod=644 docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/out /usr/share/nginx/html
 EXPOSE 8080
