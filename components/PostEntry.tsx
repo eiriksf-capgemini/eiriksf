@@ -16,7 +16,7 @@ export default function PostEntry({ post }: { post: PostMeta }) {
         <span className="text-mute">{post.minutes} min</span> · {post.category}
       </div>
       <div>
-        <h3 className="text-[26px] mb-2 group-hover:text-accent-text">{post.title}</h3>
+        <h2 className="text-[26px] mb-2 group-hover:text-accent-text">{post.title}</h2>
         <p className="text-ink-2 text-[15.5px] max-w-[62ch] mb-3">{post.excerpt}</p>
         <Tags items={post.tags} />
       </div>

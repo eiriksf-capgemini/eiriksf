@@ -25,9 +25,9 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       className="font-mono text-xs border border-line-2 text-ink-2 px-2.5 py-1 rounded hover:border-accent hover:text-accent-text"
-      aria-label={theme === "dark" ? "Bytt til lyst tema" : "Bytt til mørkt tema"}
+      aria-label={theme === "dark" ? "Bytt til lys modus" : "Bytt til mørk modus"}
     >
-      {theme === "dark" ? "◑ lys" : "◐ mørk"}
+      <span aria-hidden>{theme === "dark" ? "◑" : "◐"}</span> {theme === "dark" ? "lys" : "mørk"}
     </button>
   );
 }

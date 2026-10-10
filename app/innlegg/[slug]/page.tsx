@@ -32,6 +32,15 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   };
 }
 
+/**
+ * Kodeblokker i innlegg ruller vannrett på smale skjermer. Et felt som
+ * ruller må kunne få tastaturfokus, ellers kan det ikke rulles uten mus
+ * (axe: scrollable-region-focusable).
+ */
+const mdxComponents = {
+  pre: (props: React.ComponentPropsWithoutRef<"pre">) => <pre tabIndex={0} {...props} />,
+};
+
 export default async function PostPage({ params }: { params: Promise<Params> }) {
   const post = getPost((await params).slug);
   if (!post) notFound();
@@ -81,6 +90,7 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
       <div className="prose-post">
         <MDXRemote
           source={post.content}
+          components={mdxComponents}
           options={{ mdxOptions: { remarkPlugins: [remarkGfm], rehypePlugins: [rehypeSlug] } }}
         />
       </div>

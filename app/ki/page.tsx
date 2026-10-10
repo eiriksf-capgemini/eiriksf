@@ -80,7 +80,12 @@ export default function KiPage() {
         </div>
         <div className="min-w-0">
           <Label>Prinsipper</Label>
-          <pre className="font-mono text-[12.5px] leading-[1.7] bg-bg-2 border border-line rounded-md px-[18px] py-4 overflow-auto text-ink-2">
+          <pre
+            tabIndex={0}
+            role="region"
+            aria-label="Prinsipper for KI i plattformarbeid"
+            className="font-mono text-[12.5px] leading-[1.7] bg-bg-2 border border-line rounded-md px-[18px] py-4 overflow-auto text-ink-2 focus-visible:outline-2 focus-visible:outline-accent"
+          >
             <span className="text-mute"># hvordan jeg tenker om KI i plattformarbeid</span>
             {"\n"}
             {principles.map((p) => (
