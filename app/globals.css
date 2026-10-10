@@ -239,6 +239,22 @@ h3 {
   @apply font-mono text-[11.5px] uppercase tracking-[0.12em] text-mute;
 }
 
+/* ---------- Redusert bevegelse ----------
+   Prosjektet har ingen rullegardiner eller parallakse, men markøren i
+   $ whoami-boksen blinker i det uendelige, og knapper og lenker har
+   overganger. Ingen av delene skal kjøre for noen som har bedt om mindre
+   bevegelse. Dette dekker også alt som måtte bli lagt til senere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ---------- Utskrift ----------
    /cv er bygget av søyler som bare er bakgrunnsfarge, og nettlesere dropper
    bakgrunnsgrafikk ved utskrift som standard. Uten dette blir hver graf en
