@@ -167,9 +167,11 @@ export default function TechRadar() {
           if (items.length === 0) return null;
           return (
             <section key={r}>
-              <h3 className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent-text mb-2">
+              {/* h2, ikke h3: /ki har bare h1 over denne, og et hopp til h3 er
+                  et overskriftsnivå-brudd (fanget av Lighthouse, ikke av axe). */}
+              <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent-text mb-2">
                 {RING_LABEL[r]} ({items.length})
-              </h3>
+              </h2>
               <ul className="flex flex-col gap-2">
                 {items.map((p) => (
                   <li key={p.id} className="text-[14px] leading-[1.45] flex gap-2.5">

@@ -84,6 +84,12 @@ jobs:
       # its visible text (label-content-name-mismatch, informational only,
       # zero score weight). 0.90 leaves ~3 points of headroom below the
       # measured floor; it is not an aspirational 0.95+.
+      # Tilgjengelighetsporten stod på 0.90 da den ble satt, mot et målt gulv
+      # på 0.93. Etter esf-al3 (kontrasttokens) og esf-1m3 (tilgjengelige
+      # navn, overskriftsnivå, fokuserbare rullefelt) scorer alle fem URL-ene
+      # 1.00, tre kjøringer hver, uten variasjon. Porten står på 0.99: det
+      # minste enkeltfradraget som betyr noe (vekt 3, f.eks. heading-order)
+      # tar scoren til 0.98 og blir dermed fanget.
       - name: Lighthouse CI
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
