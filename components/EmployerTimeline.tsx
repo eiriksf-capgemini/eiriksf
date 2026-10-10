@@ -64,76 +64,85 @@ export default function EmployerTimeline() {
       {rows.map((emp) => {
         const current = emp.to === null;
         return (
-          <details key={emp.name} className="group border-t border-line" open={current}>
-            <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer py-3.5 rounded-sm">
-              <div className="grid md:grid-cols-[230px_1fr] gap-2 md:gap-6 md:items-center">
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span aria-hidden className="font-mono text-[12px] text-accent-text w-2.5">
-                      <span className="group-open:hidden">+</span>
-                      <span className="hidden group-open:inline">–</span>
+          <div key={emp.name} className="border-t border-line py-4">
+            <div className="grid md:grid-cols-[230px_1fr] gap-2 md:gap-6 md:items-center">
+              <div>
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <h2 className="font-medium text-[15px] inline">{emp.name}</h2>
+                  {current && (
+                    <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-accent-text">
+                      nå
                     </span>
-                    {/* h2, ikke span: hver arbeidsgiver er en seksjon, og uten
-                        den hopper overskriftsnivået fra h1 rett til oppdragenes
-                        h3 (axe: heading-order). */}
-                    <h2 className="font-medium text-[15px] inline">{emp.name}</h2>
-                    {current && (
-                      <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-accent-text">
-                        nå
-                      </span>
-                    )}
-                    {/* Antall oppdrag som merke, ikke i metalinjen: der brakk
-                        det til to linjer i 230px-kolonnen. */}
-                    {emp.jobs.length > 1 && (
-                      <span className="font-mono text-[10px] text-mute whitespace-nowrap">
-                        {emp.jobs.length} oppdrag
-                      </span>
-                    )}
-                  </div>
-                  <div className="font-mono text-[11.5px] text-mute mt-1 ml-[18px]">
-                    {emp.from.slice(0, 4)}–{current ? "nå" : emp.to!.slice(0, 4)} ·{" "}
-                    {monthsLabel(emp.months)}
-                  </div>
+                  )}
+                  {emp.jobs.length > 1 && (
+                    <span className="font-mono text-[10px] text-mute whitespace-nowrap">
+                      {emp.jobs.length} oppdrag
+                    </span>
+                  )}
                 </div>
-                {/* Sporet har egen flate, ikke bare en strek: en hårstrek her
-                    leses som skillelinje mellom rader i stedet for som akse. */}
-                <div className="relative h-2.5 rounded-sm bg-bg-2 ml-[18px] md:ml-0">
-                  <div
-                    aria-hidden
-                    className={[
-                      "absolute inset-y-0 rounded-sm",
-                      current ? "bg-accent" : "bg-accent/65",
-                    ].join(" ")}
-                    style={{
-                      left: `${pos(emp.from)}%`,
-                      width: `${Math.max((emp.months / careerMonths) * 100, 1.2)}%`,
-                    }}
-                  />
+                <div className="font-mono text-[11.5px] text-mute mt-1">
+                  {emp.from.slice(0, 4)}–{current ? "nå" : emp.to!.slice(0, 4)} ·{" "}
+                  {monthsLabel(emp.months)}
                 </div>
               </div>
-            </summary>
-
-            <div className="md:pl-[254px] pb-7">
-              {emp.jobs.map((job) => (
-                <div key={job.org + job.from} className="mb-6 last:mb-0">
-                  <h3 className="text-[17px] mb-0.5">{job.title}</h3>
-                  <div className="font-mono text-[12px] text-mute mb-2.5">
-                    {job.via && <span className="text-accent-text">{job.org} · </span>}
-                    {job.from.slice(0, 4)}–{job.to ? job.to.slice(0, 4) : "nå"} ·{" "}
-                    {monthsLabel(spanMonths(job.from, job.to))}
-                  </div>
-                  {job.summary.map((s) => (
-                    <p key={s.slice(0, 30)} className="text-ink-2 text-[14.5px] mb-2.5 max-w-[70ch]">
-                      {s}
-                    </p>
-                  ))}
-                  <div className="mt-3">
-                    <Tags items={job.tags} />
-                  </div>
-                </div>
-              ))}
+              <div className="relative h-2.5 rounded-sm bg-bg-2">
+                <div
+                  aria-hidden
+                  className={["absolute inset-y-0 rounded-sm", current ? "bg-accent" : "bg-accent/65"].join(" ")}
+                  style={{
+                    left: `${pos(emp.from)}%`,
+                    width: `${Math.max((emp.months / careerMonths) * 100, 1.2)}%`,
+                  }}
+                />
+              </div>
             </div>
-          </details>
+
+            {/* Standardvisningen: én setning per oppdrag. Alt annet ligger bak
+                utvidelsen eller i PDF-en. */}
+            <ul className="mt-3.5 md:pl-[254px] flex flex-col gap-1.5">
+              {emp.jobs.map((job) => (
+                <li key={job.org + job.from} className="text-[14.5px] text-ink-2 leading-[1.5]">
+                  <span className="text-ink font-medium">{job.title}</span>
+                  {job.via && <span className="text-mute font-mono text-[12px]"> · {job.org}</span>}
+                  <span className="text-mute"> — </span>
+                  {job.oneLine}
+                </li>
+              ))}
+            </ul>
+
+            <details className="group mt-2.5 md:pl-[254px]">
+              <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer inline-flex items-center gap-1.5 font-mono text-[11.5px] text-accent-text py-1">
+                <span aria-hidden>
+                  <span className="group-open:hidden">+</span>
+                  <span className="hidden group-open:inline">–</span>
+                </span>
+                <span className="group-open:hidden">Vis detaljer</span>
+                <span className="hidden group-open:inline">Skjul detaljer</span>
+              </summary>
+              <div className="pt-4 pb-2">
+                {emp.jobs.map((job) => (
+                  <div key={job.org + job.from} className="mb-6 last:mb-0">
+                    <h3 className="text-[16px] mb-0.5">
+                      {job.title}
+                      {job.via && <span className="text-mute font-normal"> · {job.org}</span>}
+                    </h3>
+                    <div className="font-mono text-[12px] text-mute mb-2.5">
+                      {job.from.slice(0, 4)}–{job.to ? job.to.slice(0, 4) : "nå"} ·{" "}
+                      {monthsLabel(spanMonths(job.from, job.to))}
+                    </div>
+                    {job.summary.map((t) => (
+                      <p key={t.slice(0, 30)} className="text-ink-2 text-[14.5px] mb-2.5 max-w-[70ch]">
+                        {t}
+                      </p>
+                    ))}
+                    <div className="mt-3">
+                      <Tags items={job.tags} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
         );
       })}
     </div>
