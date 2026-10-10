@@ -21,6 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      # Needed to build the linux/arm64 leg below under QEMU emulation; the
+      # runner itself is amd64.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
@@ -43,10 +48,23 @@ jobs:
             type=raw,value=latest
             type=sha,prefix=sha-,format=short
 
+      # linux/amd64,linux/arm64: published image must run natively on either
+      # host arch (esf-07k.7). The arm64 leg builds under QEMU emulation on
+      # this amd64 runner, so it's the slow one: a local
+      # `docker buildx build --platform linux/amd64,linux/arm64 --no-cache`
+      # comparison (Apple Silicon host, so amd64 was the emulated leg there)
+      # measured the install+build stage at ~71s native vs ~161s emulated,
+      # i.e. roughly 2.3x slower under QEMU (the `next build` compile step
+      # alone was ~3.5x slower). That's a real tax, but this job only runs
+      # on push to main (not on pull_request), so it never gates PR
+      # feedback, and 15 timeout-minutes leaves ample headroom even doubled.
+      # Decision: publish both platforms unconditionally rather than
+      # splitting PR-vs-main, since there's no PR run of this job to protect.
       - name: Build and push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
