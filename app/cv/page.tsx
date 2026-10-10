@@ -22,7 +22,11 @@ export default function CvPage() {
           <a className="btn" href="/cv.pdf" download>
             ↓ Last ned PDF
           </a>
-          <span className="font-mono text-[12.5px] text-mute">oppdatert {profile.updated}</span>
+          <span className="font-mono text-[12.5px] text-mute md:text-right">
+            siden oppdatert {profile.updated}
+            <br />
+            PDF oppdatert {profile.pdfUpdated}
+          </span>
         </div>
       </div>
 
@@ -45,6 +49,9 @@ export default function CvPage() {
           <a className="btn" href="/cv.pdf" download>
             ↓ Last ned full CV (PDF)
           </a>
+          <p className="font-mono text-[11.5px] text-mute mt-2.5">
+            Alle detaljer fra hvert oppdrag ligger i PDF-en · oppdatert {profile.pdfUpdated}
+          </p>
         </div>
 
         <aside>
