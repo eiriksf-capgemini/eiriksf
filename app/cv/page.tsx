@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import CompetenceSpans from "@/components/CompetenceSpans";
+import CredentialMarkers from "@/components/CredentialMarkers";
 import EmployerTimeline from "@/components/EmployerTimeline";
 import Label from "@/components/Label";
 import SectorBars from "@/components/SectorBars";
-import { certifications, education, languages, profile } from "@/content/cv";
+import { languages, profile } from "@/content/cv";
 import { careerStart } from "@/lib/cv";
 import { site } from "@/lib/site";
 
@@ -35,6 +36,11 @@ export default function CvPage() {
         <EmployerTimeline />
       </section>
 
+      <section className="mt-12">
+        <Label>Sertifiseringer og utdanning</Label>
+        <CredentialMarkers />
+      </section>
+
       <section className="mt-14">
         <Label>Bransjer</Label>
         <SectorBars />
@@ -55,14 +61,6 @@ export default function CvPage() {
         </div>
 
         <aside>
-          <Block
-            title="Sertifiseringer"
-            items={certifications.map((c) => ({ ...c, when: c.date.slice(0, 4) }))}
-          />
-          <Block
-            title="Utdanning"
-            items={education.map((e) => ({ ...e, when: e.to.slice(0, 4) }))}
-          />
           <div className="mb-10">
             <Label>Områder</Label>
             <CompetenceSpans />
@@ -84,27 +82,6 @@ export default function CvPage() {
           </div>
         </aside>
       </div>
-    </div>
-  );
-}
-
-function Block({
-  title,
-  items,
-}: {
-  title: string;
-  items: { when: string; title: string; by: string }[];
-}) {
-  return (
-    <div className="mb-10">
-      <Label>{title}</Label>
-      {items.map((it) => (
-        <div key={it.title} className="py-2.5 border-t border-line">
-          <div className="font-mono text-xs text-accent-text font-semibold">{it.when}</div>
-          <div className="text-[15.5px] font-semibold">{it.title}</div>
-          <div className="text-[13px] text-mute">{it.by}</div>
-        </div>
-      ))}
     </div>
   );
 }
