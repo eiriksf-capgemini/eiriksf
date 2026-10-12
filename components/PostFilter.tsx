@@ -32,6 +32,12 @@ export default function PostFilter({
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get(PARAM);
+    // Her er setState i en effect det riktige, ikke en forglemmelse: den
+    // statiske HTML-en inneholder alle innlegg, så en førsterender som
+    // allerede hadde filtrert ville ikke stemt med det serveren sendte, og
+    // hydreringen ville feilet. Vi må vente til etter mount med å lese URL-en.
+    // Regelen slås derfor av for denne ene linjen, ikke for filen (esf-07k.12).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActive(requested && categories.includes(requested) ? requested : null);
   }, [categories]);
 
