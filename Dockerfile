@@ -27,7 +27,7 @@
 # skal hindre.
 
 # ---------- 1. Avhengigheter ----------
-FROM node:22-alpine AS deps
+FROM node:26-alpine AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g "pnpm@$(node -p "require('./package.json').packageManager.split('@')[1]")" \
@@ -36,7 +36,7 @@ RUN npm install -g "pnpm@$(node -p "require('./package.json').packageManager.spl
 RUN if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install; fi
 
 # ---------- 2. Bygg (statisk eksport → /app/out) ----------
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json ./
