@@ -23,7 +23,7 @@ jobs:
   publish-ghcr:
     name: Publish image to GHCR
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     permissions:
       contents: read # checkout
       packages: write # push imaget til GHCR
@@ -82,11 +82,18 @@ jobs:
       # direkte på begge vertsarkitekturer (esf-07k.7). arm64-leggen bygges
       # under QEMU-emulering på en amd64-runner, og det er den dyre delen.
       #
-      # Første forsøk satte timeout-minutes: 15 basert på en lokal måling på
-      # Apple Silicon (~2,3x for den emulerte leggen). Den målingen var for
-      # optimistisk: på en ekte amd64-runner ble jobben AVBRUTT på 15 minutter
-      # uten å bli ferdig. Derfor 45 minutter og buildx-cache mot GitHub
-      # Actions-cachen, så bare første kjøring betaler full pris.
+      # Timeouten har måttet opp to ganger. Første forsøk var 15 minutter,
+      # basert på en lokal måling på Apple Silicon (~2,3x for den emulerte
+      # leggen); på en ekte amd64-runner ble jobben avbrutt uten å bli ferdig.
+      # 45 minutter holdt så lenge cachen var varm, men 12. oktober byttet vi
+      # base-image fra node:22 til node:26 og nginx 1.27 til 1.29 samtidig.
+      # Da var hele cachen ugyldig, og kjøringen for b6cf83a ble drept på
+      # 45m37s midt i Build and push - den commiten fikk aldri noe image.
+      # Derfor 90: en kald multi-arch-build må få bli ferdig, for det er
+      # nettopp når base-imaget endrer seg at man vil ha imaget.
+      #
+      # Den egentlige kuren er å bygge arm64 på en arm64-runner i stedet for
+      # under QEMU. Det er en større omlegging og ligger i esf-07k.15.
       #
       # Jobben kjører bare på push til main og har ingen pull_request-trigger,
       # så den blokkerer ingen PR-tilbakemelding uansett hvor lang den er.
