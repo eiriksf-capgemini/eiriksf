@@ -119,7 +119,7 @@ export default function Home() {
           <div
             className={[
               "grid border border-line rounded-md overflow-hidden",
-              TRYOUT_GRID_COLS[tryoutBlips.length] ?? TRYOUT_GRID_COLS[4],
+              TRYOUT_GRID_COLS[tryoutBlips.length],
             ].join(" ")}
           >
             {tryoutBlips.map((b, i) => (
@@ -142,10 +142,11 @@ export default function Home() {
               Se hele radaren <span>→</span>
             </Link>
           </div>
+          {/* Skilleren hører til stripen: står den utenfor betingelsen, får
+              forsiden to nakne hairlines på rad den dagen tester-ringen er tom. */}
+          <hr className="hairline" />
         </>
       )}
-
-      <hr className="hairline" />
 
       <div className="grid md:grid-cols-2 gap-12">
         <div>

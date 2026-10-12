@@ -138,7 +138,7 @@ export const blips: Blip[] = [
     quadrant: "plattform",
     ring: "vurderer",
     since: MIGRATED_SINCE,
-    note: "Følger CNCF-arbeidet uten å ha tatt stilling til hva vi bør bruke selv.",
+    note: "Følger CNCF-arbeidet uten å ha tatt stilling til hva jeg bør bruke selv.",
   },
   {
     id: "lokale-modeller-egen-infrastruktur",
@@ -153,7 +153,7 @@ export const blips: Blip[] = [
     name: "Sikkerhet i agentiske systemer",
     quadrant: "styring",
     ring: "vurderer",
-    since: "2026-09", // fra innlegget om dokumentasjon og KI (2026-09-07)
+    since: "2026-09", // antatt ut fra innlegget om dokumentasjon og KI (2026-09-07) – bekreft
     note: "Følger sikkerhetsrisikoen før jeg tar agenter i bruk i større skala.",
   },
   {
