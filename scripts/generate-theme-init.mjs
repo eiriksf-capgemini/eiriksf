@@ -1,7 +1,15 @@
 // Genererer en innholds-hashet, statisk fil av theme-init-scriptet under public/,
 // slik at den kan refereres med <script src="..."> (ekstern, same-origin fil)
-// i stedet for en inline <script>. Dette gjør at CSP script-src kan være
-// 'self' uten 'unsafe-inline'.
+// i stedet for en inline <script>.
+//
+// Det fjerner vårt eget inline-script fra siden, men ikke behovet for
+// 'unsafe-inline' i CSP-en: Next.js (App Router) injiserer sine egne inline
+// <script>-tagger per side for RSC-hydrering (self.__next_f.push), uansett
+// hva vi gjør med våre. Den serverte policyen er derfor fortsatt
+// script-src 'self' 'unsafe-inline' - se docker/security-headers.conf for
+// hvorfor alternativene (per-request-nonces eller en hash-pipeline per side)
+// ble vurdert som uforholdsmessige her. Ikke stram inn policyen på
+// grunnlag av denne filen alene; hydreringen ryker på hver eneste side.
 //
 // Kjøres automatisk før dev/build/typecheck (se package.json: pre*-scripts),
 // slik at hash og generert manifest alltid er i sync med innholdet i
