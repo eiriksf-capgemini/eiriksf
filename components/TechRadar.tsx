@@ -91,12 +91,30 @@ function place(): Placed[] {
   });
 }
 
+/**
+ * Uthevingen av en blip når legendeposten har hover/fokus er ren CSS,
+ * generert her fra samme `placed`-liste som selve nummereringen (esf-d02.2).
+ * Ingen React-state: `n` er den delte nøkkelen, og `:has()` gjør koblingen i
+ * nettleseren i stedet for i en klikk-handler. Størrelsen på sirkelen endres
+ * i tillegg til en outline, slik at uthevingen ikke hviler på farge alene
+ * (fungerer likt i lys og mørk modus siden `var(--ink)` bytter med temaet).
+ */
+function dotHighlightCss(placed: Placed[]) {
+  return placed
+    .map(
+      (p) =>
+        `.tech-radar:has([data-blip="${p.n}"]:is(:hover,:focus-within)) [data-dot="${p.n}"] circle{r:13px;stroke:var(--ink);stroke-width:3px}`,
+    )
+    .join("\n");
+}
+
 export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
   const placed = place();
   const byRing = (r: Ring) => placed.filter((p) => p.ring === r);
 
   return (
-    <div className="flow-root">
+    <div className="tech-radar flow-root">
+      <style>{dotHighlightCss(placed)}</style>
       {/* float: right + shape-outside gjør at ingressen og første legenderad
           flyter langs sirkelen i stedet for en firkant (esf-d02.1). Kun
           md: og opp - under md er radaren skjult som før, se den delte
@@ -161,7 +179,7 @@ export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
           })}
 
           {placed.map((p) => (
-            <g key={p.id}>
+            <g key={p.id} data-dot={p.n}>
               <circle cx={p.x} cy={p.y} r={BLIP_R} className="fill-accent" />
               <text
                 x={p.x}
@@ -197,7 +215,12 @@ export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
               </h2>
               <ul className="flex flex-col gap-2">
                 {items.map((p) => (
-                  <li key={p.id} className="text-[14px] leading-[1.45] flex gap-2.5">
+                  <li
+                    key={p.id}
+                    data-blip={p.n}
+                    tabIndex={0}
+                    className="text-[14px] leading-[1.45] flex gap-2.5 rounded-sm"
+                  >
                     <span className="font-mono text-[11px] text-mute pt-[3px] w-5 shrink-0 text-right">
                       {p.n}
                     </span>
