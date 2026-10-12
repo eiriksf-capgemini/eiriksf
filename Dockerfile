@@ -60,6 +60,12 @@ RUN pnpm build
 
 # ---------- 3. Runtime: kun nginx + statiske filer ----------
 FROM nginxinc/nginx-unprivileged:1.29-alpine-slim AS runtime
+# Snippeten legges rett i /etc/nginx, ikke i en ny underkatalog: COPY --chmod
+# setter samme modus på kataloger den oppretter, og 644 på en katalog betyr
+# ingen x-bit, altså ingen gjennomgang - nginx som uprivilegert bruker fikk
+# 'Permission denied' på include. Den kan heller ikke ligge i conf.d/, som
+# auto-inkluderes som server-kontekst.
+COPY --chmod=644 docker/security-headers.conf /etc/nginx/security-headers.conf
 COPY --chmod=644 docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/out /usr/share/nginx/html
 EXPOSE 8080
