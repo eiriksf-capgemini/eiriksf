@@ -4,12 +4,19 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: read
-  packages: write
+# Ingen rettigheter på workflow-nivå: de settes på jobben som faktisk trenger
+# dem, slik at en jobb lagt til her senere ikke arver skriverettigheter den
+# ikke har bedt om.
+permissions: {}
 
+# Egen lane per commit, ikke per ref. Med én felles lane for main tillater
+# GitHub bare ÉN ventende kjøring: lander det flere pusher mens et bygg står
+# på, kastes de mellomliggende før de starter, og de commitene får aldri et
+# sha-tagget image. Det skjedde to ganger 10. og 12. oktober. Nå står hver
+# commit i sin egen lane og blir bygget; at latest ikke kan gå bakover løses
+# av stale-sjekken under i stedet for av køen.
 concurrency:
-  group: publish-${{ github.ref }}
+  group: publish-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -17,9 +24,16 @@ jobs:
     name: Publish image to GHCR
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: read # checkout
+      packages: write # push imaget til GHCR
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Ingen grunn til å la GITHUB_TOKEN bli liggende i git-konfigen på
+          # runneren; ingenting her pusher tilbake.
+          persist-credentials: false
 
       # Needed to build the linux/arm64 leg below under QEMU emulation; the
       # runner itself is amd64.
@@ -39,13 +53,29 @@ jobs:
       # Tags: "latest" (moves with main) and "sha-<short-sha>" (immutable,
       # traceable back to the exact commit). metadata-action lowercases the
       # image name automatically, which GHCR requires.
+      # Er denne commiten fortsatt toppen av main? Kjører to bygg parallelt i
+      # hver sin lane, skal det eldste publisere sitt sha-tag, men ikke dra
+      # latest bakover. Sammenligningen gjøres mot remote, ikke mot det vi
+      # sjekket ut.
+      - name: Er denne commiten fortsatt main?
+        id: head
+        run: |
+          remote_head="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)"
+          if [ "$remote_head" = "$GITHUB_SHA" ]; then
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+            echo "$GITHUB_SHA er main sin HEAD - latest flyttes hit."
+          else
+            echo "latest=false" >> "$GITHUB_OUTPUT"
+            echo "main står nå på $remote_head; publiserer bare sha-tag og lar latest være."
+          fi
+
       - name: Compute tags
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ steps.head.outputs.latest == 'true' }}
             type=sha,prefix=sha-,format=short
 
       # linux/amd64,linux/arm64: det publiserte imaget må kunne kjøres

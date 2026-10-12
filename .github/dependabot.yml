@@ -1,17 +1,46 @@
 version: 2
+
+# Oppdateringene er gruppert og spredt utover uken med vilje. Uten `groups`
+# blir hver avhengighet sin egen PR, og uten `day` deler alle tre økosystemene
+# samme sjekkeslot: 9. oktober 2026 åpnet det åtte PR-er innenfor tre minutter,
+# fem av dem npm. Det er flere enn noen rekker å vurdere, og CI-kjøringene
+# deres kolliderte med hverandre. Én PR per økosystem per uke, på hver sin dag,
+# er langt lettere å faktisk ta stilling til.
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      # Patch og minor samles i én PR – de er sjelden verdt hver sin
+      # gjennomgang. Major holdes utenfor og kommer som egne PR-er, fordi det
+      # er de som krever at noen faktisk leser endringsloggen: Next 16 fjernet
+      # `next lint`, og eslint-config-next 16 byttet til flat config.
+      npm-minor-og-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "tuesday"
+    groups:
+      base-images:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "wednesday"
+    groups:
+      actions:
+        patterns:
+          - "*"
