@@ -10,3 +10,8 @@ out
 # avhengigheten eller nettleseren trengs for å bygge/serve den statiske
 # eksporten.
 tools/verify-ui
+
+# Kildemateriale (assets/) – originalfiler som profilbildet, beholdt i repoet
+# fordi det ikke finnes en annen kopi. Brukes ikke av bygget og skal ikke inn
+# i build-konteksten.
+assets
