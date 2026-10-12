@@ -5,10 +5,11 @@
  * (modenhet/tillit). Å flytte en blip til en annen ring er en ett-ords diff:
  * endre `ring` (og `since`), ingenting annet.
  *
- * Om `since`: seks av de seksten blipsene er datert ut fra faktiske kilder i
- * repoet - oppdragsperioden i `content/cv.ts` og daterte innlegg under
- * `content/innlegg/` - og hver av dem har kilden notert i en kommentar på
- * linja. De ti øvrige står på 2026-10, måneden radaren ble opprettet (commit
+ * Om `since`: fire av de seksten blipsene er datert ut fra faktiske kilder i
+ * repoet - oppdragsperioden i `content/cv.ts` og et datert innlegg under
+ * `content/innlegg/`. To til er utledet av samme innlegg uten at det sier det
+ * rett ut, og er merket `bekreft` på linja så de ikke forveksles med de
+ * dokumenterte. Alle seks har kilden notert i en kommentar. De ti øvrige står på 2026-10, måneden radaren ble opprettet (commit
  * 62f72e3, 2. oktober 2026). Det er ikke en plassholder lenger: eier har tatt
  * stilling til det og sier at for disse verktøyene er det da de kom inn på
  * radaren som er den datoen vi kan stå inne for. Finnes det en mer presis

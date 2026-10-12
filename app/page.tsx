@@ -22,8 +22,13 @@ const TRYOUT_GRID_COLS: Record<number, string> = {
 
 export default function Home() {
   const posts = getAllPosts().slice(0, 3);
-  const tryoutBlips = testBlipsBySinceDesc().slice(0, 4);
-  const tryoutUpdated = newestSince();
+  const tryoutRing = testBlipsBySinceDesc();
+  const tryoutBlips = tryoutRing.slice(0, 4);
+  // Datoen står på overskriften til stripen, så den skal beskrive ringen
+  // stripen viser - ikke alle blips. Uten argument reduserer newestSince over
+  // hele datasettet, og en nyere dato på en blip i en annen ring ville gitt
+  // stripen en oppdatert-dato som ikke hører til noe av det som står der.
+  const tryoutUpdated = newestSince(tryoutRing);
 
   const personJsonLd = {
     "@context": "https://schema.org",
