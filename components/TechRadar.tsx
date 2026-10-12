@@ -19,6 +19,26 @@ const C = SIZE / 2;
 const R = 236;
 /** Blip-radius. Målt minste senteravstand er 21 px, så 9 gir luft. */
 const BLIP_R = 9;
+/**
+ * Hver ring får sin egen behandling av selve blipen (esf-cph). Før så alle
+ * seksten like ut, og da måtte modenheten leses ut av hvor langt inn i
+ * sirkelen prikken lå - eller telles opp i legenden.
+ *
+ * Forskjellen ligger i fyll og strek, ikke i fargetone: fylt, halvfylt, hul
+ * og stiplet skilles fra hverandre også i gråtoner og for en fargeblind
+ * leser. Samme linje som SectorBars holder, der hvert felt gjentas i
+ * legenden nettopp fordi fargen ikke skal bære informasjonen alene.
+ */
+const RING_BLIP: Record<Ring, { className: string; hint: string }> = {
+  bruker: { className: "fill-accent", hint: "fylt" },
+  tester: { className: "fill-accent/55 stroke-accent [stroke-width:2]", hint: "halvfylt" },
+  vurderer: { className: "fill-bg stroke-accent [stroke-width:2]", hint: "hul" },
+  "lagt-bort": {
+    className: "fill-bg stroke-line-2 [stroke-width:2] [stroke-dasharray:3_2]",
+    hint: "stiplet",
+  },
+};
+
 const RING_LABEL: Record<Ring, string> = {
   bruker: "bruker",
   tester: "tester",
@@ -195,13 +215,13 @@ export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
 
           {placed.map((p) => (
             <g key={p.id} data-dot={p.n}>
-              <circle cx={p.x} cy={p.y} r={BLIP_R} className="fill-accent" />
+              <circle cx={p.x} cy={p.y} r={BLIP_R} className={RING_BLIP[p.ring].className} />
               <text
                 x={p.x}
                 y={p.y + 3.2}
                 textAnchor="middle"
                 fontSize={9}
-                className="fill-accent-ink font-mono"
+                className={p.ring === "bruker" ? "fill-accent-ink font-mono" : "fill-ink font-mono"}
               >
                 {p.n}
               </text>
@@ -227,6 +247,10 @@ export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
                   et overskriftsnivå-brudd (fanget av Lighthouse, ikke av axe). */}
               <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent-text mb-2">
                 {RING_LABEL[r]} ({items.length})
+                <span className="text-mute normal-case tracking-normal">
+                  {" "}
+                  · {RING_BLIP[r].hint} blip
+                </span>
               </h2>
               <ul className="flex flex-col gap-2">
                 {items.map((p) => (
