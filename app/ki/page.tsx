@@ -14,13 +14,16 @@ export default function KiPage() {
     <div className="wrap">
       <Label idx="03">KI &amp; teknologi</Label>
       <h1 className="text-[48px]">Verktøy, eksperimenter og hva jeg følger med på.</h1>
-      <p className="text-[21px] leading-[1.5] text-ink mt-3.5 max-w-[44ch]">
-        En levende oversikt over teknologi jeg bruker i praksis, tester ut, eller holder et øye med –
-        med vekt på KI i plattform- og utviklerarbeid.
-      </p>
 
       <div className="mt-9">
-        <TechRadar />
+        <TechRadar
+          intro={
+            <p className="text-[21px] leading-[1.5] text-ink max-w-[44ch]">
+              En levende oversikt over teknologi jeg bruker i praksis, tester ut, eller holder et
+              øye med – med vekt på KI i plattform- og utviklerarbeid.
+            </p>
+          }
+        />
       </div>
 
       <hr className="hairline" />
