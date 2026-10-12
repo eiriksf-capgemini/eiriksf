@@ -7,7 +7,19 @@
  * oppdrag pluss hull blir nøyaktig karrierespennet. Visningen av varighet
  * per jobb på /cv teller inklusivt – det er en bevisst forskjell.
  */
-import { jobs, SECTORS, statsFigures, type Competence, type Job, type Sector } from "@/content/cv";
+import {
+  certifications,
+  education,
+  jobs,
+  ROLE_LEVELS,
+  roleLevelRank,
+  SECTORS,
+  statsFigures,
+  type Competence,
+  type Job,
+  type RoleLevel,
+  type Sector,
+} from "@/content/cv";
 
 const MND = ["jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des"];
 
@@ -102,8 +114,7 @@ export const sectorsByTime = SECTORS.map((sector) => ({
   .sort((a, b) => b.months - a.months);
 
 /** Måneder mellom oppdrag – jobbskifter som ikke faller på samme måned. */
-export const gapMonths =
-  careerMonths - Object.values(sectorMonths).reduce((sum, m) => sum + m, 0);
+export const gapMonths = careerMonths - Object.values(sectorMonths).reduce((sum, m) => sum + m, 0);
 
 /** Hele år i bransjen, utledet fra første jobb. Én kilde, to visningssteder. */
 export const careerYears = Math.floor(careerMonths / 12);
@@ -113,3 +124,95 @@ export const stats = [
   { num: String(careerYears), sup: "+", desc: "år i bransjen" },
   ...statsFigures,
 ];
+
+/**
+ * Felles akse for den samlede tidslinjen (esf-7qk.1). Flyttet hit fra de tre
+ * grafikkene som før tegnet hver sin akse – nå finnes pos()-regnestykket og
+ * femårsmerkene bare ett sted, konsumert av CareerTimeline alene.
+ */
+const AXIS_START = toMonths(careerStart);
+
+/** Posisjon på den felles tidsaksen (careerStart → nå) som prosent, 0–100. */
+export function axisPosition(ym: string): number {
+  return ((toMonths(ym) - AXIS_START) / careerMonths) * 100;
+}
+
+/** Startåret pluss femårsmerker. Annethvert merke skjules under md: på
+ *  360 px kolliderer "2025" med "nå". */
+export function axisTicks(): { label: string; left: number; mobile: boolean }[] {
+  const firstYear = Number(careerStart.slice(0, 4));
+  const lastYear = new Date().getFullYear();
+  const out = [{ label: String(firstYear), left: 0, mobile: true }];
+  for (let y = Math.ceil(firstYear / 5) * 5; y < lastYear; y += 5) {
+    out.push({ label: String(y), left: axisPosition(`${y}-01`), mobile: (y / 5) % 2 === 0 });
+  }
+  return out;
+}
+
+/**
+ * Rollenivå som skalert feltstyrke (0.28–1) i arbeidsgiverbanene. Rang 1
+ * (Drift) er lysest, rang 5 (Teknisk ledelse) er mørkest. Erstatter
+ * RoleProgression sine egne baner – nivået vises nå som intensitet inni
+ * arbeidsgiverbanen i stedet for en egen trapp over dem.
+ */
+export function roleLevelOpacity(level: RoleLevel): number {
+  const rank = roleLevelRank(level); // 1..ROLE_LEVELS.length
+  const steps = ROLE_LEVELS.length - 1;
+  return 0.28 + (rank - 1) * (0.72 / steps);
+}
+
+/** Korte etiketter ved prikkene i sertifiserings-/utdanningsbanen – samme
+ *  tekst som fulltittelen, bare forkortet så den får plass ved siden av
+ *  prikken. Ren presentasjon, ingen ny CV-fakta. */
+const CREDENTIAL_SHORT_LABEL: Record<string, string> = {
+  "GH-900: GitHub Foundations": "GH-900",
+  "Professional Scrum Master I": "PSM I",
+  "SC-900 Security, Compliance & Identity": "SC-900",
+  "AZ-900 Azure Fundamentals": "AZ-900",
+  "DASA DevOps Fundamentals": "DASA",
+  "B.Sc. Computer Science": "B.Sc.",
+  "Fagbrev Maritim Serviceelektronikk": "Fagbrev",
+};
+
+export type CredentialMark = {
+  key: string;
+  title: string;
+  by: string;
+  when: string;
+  short: string;
+  /** Null når merket ligger helt før aksen starter. */
+  at: string | null;
+  /** Startpunkt for et spenn (utdanning). Kan ligge før aksen. */
+  from?: string;
+};
+
+/**
+ * Sertifiseringer og utdanning som merker på den felles tidsaksen, nyest
+ * først. Flyttet hit fra CredentialMarkers.tsx da figuren ble slått sammen
+ * med arbeidsgiver- og rolletidslinjen (esf-7qk.1) – samme utledning, nå
+ * delt kilde for den samlede figuren og dens tekstekvivalent.
+ */
+export function credentialMarks(): CredentialMark[] {
+  const certs: CredentialMark[] = certifications.map((c) => ({
+    key: c.title,
+    title: c.title,
+    by: c.by,
+    when: formatYm(c.date),
+    short: CREDENTIAL_SHORT_LABEL[c.title] ?? c.title.split(" ")[0],
+    at: c.date,
+  }));
+  const edu: CredentialMark[] = education.map((e) => ({
+    key: e.title,
+    title: e.title,
+    by: e.by,
+    when: `${e.from.slice(0, 4)}–${e.to.slice(0, 4)}`,
+    short: CREDENTIAL_SHORT_LABEL[e.title] ?? e.title.split(" ")[0],
+    at: toMonths(e.to) >= AXIS_START ? e.to : null,
+    from: e.from,
+  }));
+  return [...certs, ...edu].sort((a, b) => {
+    const av = a.at ?? "0000-00";
+    const bv = b.at ?? "0000-00";
+    return bv.localeCompare(av);
+  });
+}
