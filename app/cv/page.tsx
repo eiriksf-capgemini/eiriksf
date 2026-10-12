@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
+import CareerTimeline from "@/components/CareerTimeline";
 import CompetenceSpans from "@/components/CompetenceSpans";
-import CredentialMarkers from "@/components/CredentialMarkers";
-import RoleProgression from "@/components/RoleProgression";
 import EmployerTimeline from "@/components/EmployerTimeline";
 import Label from "@/components/Label";
 import SectorBars from "@/components/SectorBars";
@@ -34,17 +33,8 @@ export default function CvPage() {
 
       <section className="mt-14">
         <Label>Erfaring</Label>
+        <CareerTimeline />
         <EmployerTimeline />
-      </section>
-
-      <section className="mt-12">
-        <Label>Rolleutvikling</Label>
-        <RoleProgression />
-      </section>
-
-      <section className="mt-12">
-        <Label>Sertifiseringer og utdanning</Label>
-        <CredentialMarkers />
       </section>
 
       <section className="mt-14">
