@@ -1,7 +1,16 @@
+# Lokal utviklingsenhet. En produksjonsenhet ville sett motsatt ut: ingen
+# build, men image: ghcr.io/eiriksf-capgemini/eiriksf:latest og pull_policy
+# always. Det hører til esf-cof.
 services:
   web:
     build: .
     image: eiriksf:latest
+    # Uten denne bygger compose bare hvis tagen mangler. Siden eiriksf:latest
+    # ligger igjen lokalt etter pnpm run docker:build, betød det at
+    # `docker compose up` gjenopprettet containeren og serverte et to timer
+    # gammelt image uten å si fra (esf-07k.16). `build` tvinger bygg hver
+    # gang, så kommandoen gjør det man tror den gjør.
+    pull_policy: build
     ports:
       - "8080:8080"
     restart: unless-stopped

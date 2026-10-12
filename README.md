@@ -34,10 +34,15 @@ pnpm build               # statisk eksport til ./out
 ## Docker
 
 ```bash
-docker compose up --build        # http://localhost:8080
+docker compose up               # http://localhost:8080 – bygger alltid på nytt
 # eller
 pnpm docker:build && docker run --rm -p 8080:8080 eiriksf:latest
 ```
+
+Compose-filen setter `pull_policy: build`, så `up` bygger imaget på nytt hver
+gang. Uten det bygger compose bare når tagen mangler, og `eiriksf:latest`
+ligger igjen lokalt etter `pnpm docker:build` – da serverer `up` et gammelt
+image uten å si fra.
 
 Imaget bruker `nginx-unprivileged` (kjører som ikke-root på port 8080) og inneholder kun de
 statiske filene – ingen Node i runtime.
