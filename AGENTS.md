@@ -47,6 +47,70 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
+## Build & Test
+
+```bash
+pnpm install
+pnpm dev                 # http://localhost:3000
+pnpm lint                # eslint app components lib (flat config)
+pnpm typecheck           # tsc --noEmit
+pnpm build               # statisk eksport til ./out
+pnpm format              # prettier
+pnpm docker:build && pnpm docker:run        # nginx på :8080
+pnpm verify:ui -- --path /cv/ --viewport 360x800   # headless nettleser: overflow, axe, tab-rekkefølge
+```
+
+Node: prosjektet sikter på Node 26 (`Dockerfile` og begge CI-jobbene). `radar:check`
+krever >= 22 for `--experimental-strip-types`.
+
+**Hvis `node` ikke ligger på PATH** - vanlig med nvm - feiler alle pnpm-script med
+`exec: node: not found`. Kjør først:
+
+```bash
+export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" && nvm use 26   # eller nyeste du har
+```
+
+`prebuild` og `pretypecheck` kjører `generate:theme-init` og `radar:check` først, så
+ugyldige radardata stopper bygget før det rekker å bli grønt.
+
+`verify:ui` trenger engangsoppsett: `pnpm verify:ui:setup` og
+`pnpm verify:ui:install-browser`. Harnesset bor utenfor rot-manifestet og er
+ekskludert fra Docker-konteksten.
+
+## Architecture Overview
+
+Statisk Next.js-side (App Router, `output: "export"`). Ingen Node i runtime - imaget
+er nginx-unprivileged som serverer `out/` på port 8080 som ikke-root.
+
+- **Innholdet er typede TS-moduler, ikke et CMS.** `content/cv.ts` (CV-data),
+  `content/radar.ts` (teknologiradar som flat liste av blips),
+  `content/ki.ts` (eksperimenter, prinsipper), `content/innlegg/*.mdx` (innlegg,
+  lest med gray-matter og rendret med `next-mdx-remote/rsc`).
+- **`lib/` utleder, det lagrer ikke.** `lib/cv.ts` (tidsaksematematikk),
+  `lib/posts.ts` (lesing av MDX), `lib/site.ts` (navn, lenker, meny, absolutte URL-er).
+- **Ett datasett per faktum.** Forsidestripen og `/ki` leser begge
+  `content/radar.ts`, så de kan ikke motsi hverandre. Ikke lag en håndholdt liste
+  nummer to.
+- **Temaet settes før paint** av et generert, render-blokkerende script
+  (`scripts/generate-theme-init.mjs`), og bor i `data-theme` på `<html>`.
+  `app/globals.css` holder designtokens for lys og mørk samt komponentklasser.
+
+## Conventions & Patterns
+
+- **Norsk bokmål** i all tekst leseren ser. Konkret, i jeg-form, uten
+  markedsføringsadjektiver - følg stemmen som allerede står i `content/`.
+- **Kommentarer forklarer hvorfor**, ofte med bead-id-en som utløste valget. De er
+  ikke støy; behold dem når du endrer kode i nærheten.
+- **Radar-, spider- og polarspråket er reservert `/ki`.** Ingen sirkulære eller
+  vinkelbaserte diagrammer andre steder, og særlig ikke på `/cv`.
+- **Blip-notater er én setning under 90 tegn.** `radar:check` feiler bygget ellers,
+  og en blip uten notat slipper ikke gjennom.
+- **`FROM`-linjene i Dockerfile står bokstavelig.** Dependabot hopper over enhver
+  `FROM` med en variabel, så en ARG der slår stille av base-image-oppdateringene.
+- **Utled state fra DOM eller URL i stedet for å duplisere den i React.**
+  `react-hooks/set-state-in-effect` håndheves som error; trenger du unntak, slå den
+  av for én linje med begrunnelse, aldri for en fil.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:1105d646 -->
 ## Beads Issue Tracker
 

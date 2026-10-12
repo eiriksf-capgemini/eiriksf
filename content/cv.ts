@@ -69,8 +69,10 @@ export type Job = {
 };
 
 export const profile = {
-  /** Når innholdet på denne siden sist ble gjennomgått. */
-  updated: "2026-10-02",
+  /** Når innholdet på denne siden sist ble gjennomgått. Følger datoen
+   *  CV-dokumentet ble generert, slik at siden og PDF-en oppgir samme
+   *  gjennomgang i stedet for to datoer leseren må tolke hver for seg. */
+  updated: "2026-10-12",
   /** Når public/cv.pdf sist ble byttet ut. Selve PDF-en har ingen dato i seg,
    *  så siden må oppgi den – ellers lover nedlastingen en ferskhet vi ikke
    *  kan stå inne for (esf-hnd.9). Oppdater denne når PDF-en byttes. */

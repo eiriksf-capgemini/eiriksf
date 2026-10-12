@@ -5,17 +5,15 @@
  * (modenhet/tillit). Å flytte en blip til en annen ring er en ett-ords diff:
  * endre `ring` (og `since`), ingenting annet.
  *
- * Om `since`: de 16 migrerte blipsene kom fra den gamle `content/ki.ts`, som
- * ikke hadde tidsstempler i det hele tatt. Seks av dem er nå datert ut fra
- * faktiske kilder i repoet - oppdragsperioden i `content/cv.ts` og daterte
- * innlegg under `content/innlegg/` - og hver av dem har kilden notert i en
- * kommentar på linja. De ti resterende står fortsatt på placeholderen
- * `MIGRATED_SINCE` fordi det ikke finnes noe skriftlig å datere dem etter, og
- * vi dikter ikke opp måneder vi ikke kan stå inne for. Så lenge noen blips har
- * placeholder, er `newestSince()` - og dermed "oppdatert"-datoen på forsiden -
- * fortsatt avledet av den, ikke av en reell hendelse. Eier fyller inn resten
- * (se esf-btl.7), og setter `since` på nytt hver gang en blip faktisk bytter
- * ring.
+ * Om `since`: seks av de seksten blipsene er datert ut fra faktiske kilder i
+ * repoet - oppdragsperioden i `content/cv.ts` og daterte innlegg under
+ * `content/innlegg/` - og hver av dem har kilden notert i en kommentar på
+ * linja. De ti øvrige står på 2026-10, måneden radaren ble opprettet (commit
+ * 62f72e3, 2. oktober 2026). Det er ikke en plassholder lenger: eier har tatt
+ * stilling til det og sier at for disse verktøyene er det da de kom inn på
+ * radaren som er den datoen vi kan stå inne for. Finnes det en mer presis
+ * måned senere, settes den. Ellers settes `since` på nytt hver gang en blip
+ * faktisk bytter ring.
  */
 
 export const QUADRANTS = ["agenter", "modeller", "plattform", "styring"] as const;
@@ -36,8 +34,6 @@ export type Blip = {
   history?: { ring: Ring; at: string }[];
 };
 
-const MIGRATED_SINCE = "2026-10";
-
 export const blips: Blip[] = [
   // --- tidligere "Bruker" (i produksjon) → ring: bruker ---
   {
@@ -45,7 +41,7 @@ export const blips: Blip[] = [
     name: "Claude Code",
     quadrant: "agenter",
     ring: "bruker",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Bruker den daglig til agentisk utvikling; den tar unna det meste av kodingen.",
   },
   {
@@ -53,7 +49,7 @@ export const blips: Blip[] = [
     name: "GitHub Copilot",
     quadrant: "modeller",
     ring: "bruker",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Fast følgesvenn i IDE-en for kodefullføring og chat, brukt hver dag.",
   },
   {
@@ -85,7 +81,7 @@ export const blips: Blip[] = [
     name: "Terraform / Bicep",
     quadrant: "plattform",
     ring: "bruker",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Standardverktøyet mitt for infrastruktur som kode i produksjon.",
   },
 
@@ -111,7 +107,7 @@ export const blips: Blip[] = [
     name: "Crossplane",
     quadrant: "plattform",
     ring: "tester",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Evaluerer den som mulig supplement til dagens plattformverktøy.",
   },
   {
@@ -119,7 +115,7 @@ export const blips: Blip[] = [
     name: "Kyverno policy-as-code",
     quadrant: "styring",
     ring: "tester",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Tester policy-as-code, men har ikke rullet det ut i full bredde.",
   },
   {
@@ -127,7 +123,7 @@ export const blips: Blip[] = [
     name: "OpenTelemetry end-to-end",
     quadrant: "plattform",
     ring: "tester",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Prøver ende-til-ende sporing; dekningen er for tynn for produksjon ennå.",
   },
 
@@ -137,7 +133,7 @@ export const blips: Blip[] = [
     name: "Platform engineering-standarder",
     quadrant: "plattform",
     ring: "vurderer",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Følger CNCF-arbeidet uten å ha tatt stilling til hva jeg bør bruke selv.",
   },
   {
@@ -145,7 +141,7 @@ export const blips: Blip[] = [
     name: "Lokale modeller på egen infrastruktur",
     quadrant: "modeller",
     ring: "vurderer",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Vurderer lokal modellhosting, men har ikke et behov som krever det ennå.",
   },
   {
@@ -161,7 +157,7 @@ export const blips: Blip[] = [
     name: "EU AI Act i praksis",
     quadrant: "styring",
     ring: "vurderer",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Vurderer hvordan regelverket slår ut i praksis før jeg endrer noe.",
   },
   {
@@ -169,7 +165,7 @@ export const blips: Blip[] = [
     name: "WebAssembly i Kubernetes",
     quadrant: "plattform",
     ring: "vurderer",
-    since: MIGRATED_SINCE,
+    since: "2026-10", // da radaren ble opprettet; ingen mer presis måned kjent
     note: "Følger WASM-runtime i Kubernetes som mulig retning; ikke prøvd i praksis.",
   },
 
