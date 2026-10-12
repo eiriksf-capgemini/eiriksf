@@ -5,14 +5,17 @@
  * (modenhet/tillit). Å flytte en blip til en annen ring er en ett-ords diff:
  * endre `ring` (og `since`), ingenting annet.
  *
- * Om `since`: migrerte blips har ingen historiske datoer å hente fra – den
- * gamle `content/ki.ts`-strukturen hadde bare tre kolonner uten tidsstempel.
- * For å unngå å dikte opp presise datoer vi ikke kan stå inne for, bruker alle
- * 16 migrerte blips samme måned: 2026-10, måneden git-historikken viser at
- * radardataene først ble lagt inn i repoet (commit 62f72e3, 2. okt 2026). Det
- * er altså et bevisst, dokumentert placeholder-tidsstempel – ikke en påstand
- * om når hvert enkelt verktøy faktisk havnet i sin ring. Eier bør oppdatere
- * `since` etter hvert som ringer faktisk endres fremover.
+ * Om `since`: de 16 migrerte blipsene kom fra den gamle `content/ki.ts`, som
+ * ikke hadde tidsstempler i det hele tatt. Seks av dem er nå datert ut fra
+ * faktiske kilder i repoet - oppdragsperioden i `content/cv.ts` og daterte
+ * innlegg under `content/innlegg/` - og hver av dem har kilden notert i en
+ * kommentar på linja. De ti resterende står fortsatt på placeholderen
+ * `MIGRATED_SINCE` fordi det ikke finnes noe skriftlig å datere dem etter, og
+ * vi dikter ikke opp måneder vi ikke kan stå inne for. Så lenge noen blips har
+ * placeholder, er `newestSince()` - og dermed "oppdatert"-datoen på forsiden -
+ * fortsatt avledet av den, ikke av en reell hendelse. Eier fyller inn resten
+ * (se esf-btl.7), og setter `since` på nytt hver gang en blip faktisk bytter
+ * ring.
  */
 
 export const QUADRANTS = ["agenter", "modeller", "plattform", "styring"] as const;
@@ -43,7 +46,7 @@ export const blips: Blip[] = [
     quadrant: "agenter",
     ring: "bruker",
     since: MIGRATED_SINCE,
-    note: "I daglig bruk for agentisk utvikling; dekker det meste av kodeoppgavene nå.",
+    note: "Bruker den daglig til agentisk utvikling; den tar unna det meste av kodingen.",
   },
   {
     id: "github-copilot",
@@ -51,31 +54,31 @@ export const blips: Blip[] = [
     quadrant: "modeller",
     ring: "bruker",
     since: MIGRATED_SINCE,
-    note: "Fast IDE-følgesvenn for kodefullføring og chat i det daglige.",
+    note: "Fast følgesvenn i IDE-en for kodefullføring og chat, brukt hver dag.",
   },
   {
     id: "backstage",
     name: "Backstage",
     quadrant: "plattform",
     ring: "bruker",
-    since: MIGRATED_SINCE,
-    note: "Kjører som intern utviklerportal (IDP) i produksjon.",
+    since: "2023-09", // fra content/cv.ts: Instech-oppdraget fra 2023-09
+    note: "Satte den opp som selvhostet utviklerportal; dekker katalog og selvbetjening.",
   },
   {
     id: "argocd",
     name: "ArgoCD",
     quadrant: "plattform",
     ring: "bruker",
-    since: MIGRATED_SINCE,
-    note: "Driver GitOps-utrulling i produksjon og har vært stabilt lenge.",
+    since: "2023-09", // fra content/cv.ts: Instech-oppdraget fra 2023-09
+    note: "Driver GitOps-utrulling i produksjon og har aldri gitt grunn til å bytte.",
   },
   {
     id: "external-secrets-operator",
     name: "External Secrets Operator",
     quadrant: "plattform",
     ring: "bruker",
-    since: MIGRATED_SINCE,
-    note: "Håndterer hemmeligheter i klyngene i produksjon.",
+    since: "2023-09", // fra content/cv.ts: Instech-oppdraget fra 2023-09
+    note: "Håndterer hemmeligheter i klyngene, satt opp mot Azure Key Vault.",
   },
   {
     id: "terraform-bicep",
@@ -83,7 +86,7 @@ export const blips: Blip[] = [
     quadrant: "plattform",
     ring: "bruker",
     since: MIGRATED_SINCE,
-    note: "Standard IaC-verktøy for infrastruktur i produksjon.",
+    note: "Standardverktøyet mitt for infrastruktur som kode i produksjon.",
   },
 
   // --- tidligere "Tester" (eksperiment) → ring: tester ---
@@ -92,16 +95,16 @@ export const blips: Blip[] = [
     name: "MCP-servere mot interne verktøy",
     quadrant: "plattform",
     ring: "tester",
-    since: MIGRATED_SINCE,
-    note: "Utforsker MCP som grensesnitt mot interne verktøy, ikke modnet til bruk ennå.",
+    since: "2026-09", // antatt ut fra samme innlegg (2026-09-07) – bekreft
+    note: "Utforsker MCP som grensesnitt mot interne verktøy; ikke modent til bruk ennå.",
   },
   {
     id: "ki-agenter-ci-pipelines",
     name: "KI-agenter i CI-pipelines",
     quadrant: "agenter",
     ring: "tester",
-    since: MIGRATED_SINCE,
-    note: "Prøver ut agenter som vurderer og handler i CI, men uten fullt tillit ennå.",
+    since: "2026-08", // fra eksperimentet "Automatisk triage av Dependabot-PR-er" (2026-08)
+    note: "Piloterer en agent som vurderer risiko i CI; stoler ikke blindt på den ennå.",
   },
   {
     id: "crossplane",
@@ -109,7 +112,7 @@ export const blips: Blip[] = [
     quadrant: "plattform",
     ring: "tester",
     since: MIGRATED_SINCE,
-    note: "Evaluerer som mulig supplement til dagens plattformverktøy.",
+    note: "Evaluerer den som mulig supplement til dagens plattformverktøy.",
   },
   {
     id: "kyverno-policy-as-code",
@@ -117,7 +120,7 @@ export const blips: Blip[] = [
     quadrant: "styring",
     ring: "tester",
     since: MIGRATED_SINCE,
-    note: "Tester policy-as-code for å håndheve sikkerhetsregler automatisk.",
+    note: "Tester policy-as-code, men har ikke rullet det ut i full bredde.",
   },
   {
     id: "opentelemetry-end-to-end",
@@ -125,7 +128,7 @@ export const blips: Blip[] = [
     quadrant: "plattform",
     ring: "tester",
     since: MIGRATED_SINCE,
-    note: "Prøver ende-til-ende sporing, men dekningen er ikke komplett nok for produksjon.",
+    note: "Prøver ende-til-ende sporing; dekningen er for tynn for produksjon ennå.",
   },
 
   // --- tidligere "Følger med på" (radar) → ring: vurderer ---
@@ -135,7 +138,7 @@ export const blips: Blip[] = [
     quadrant: "plattform",
     ring: "vurderer",
     since: MIGRATED_SINCE,
-    note: "Følger CNCF-arbeidet på platform engineering uten å ha tatt stilling ennå.",
+    note: "Følger CNCF-arbeidet uten å ha tatt stilling til hva jeg bør bruke selv.",
   },
   {
     id: "lokale-modeller-egen-infrastruktur",
@@ -143,15 +146,15 @@ export const blips: Blip[] = [
     quadrant: "modeller",
     ring: "vurderer",
     since: MIGRATED_SINCE,
-    note: "Vurderer lokal modellhosting, men har ikke et konkret behov som krever det ennå.",
+    note: "Vurderer lokal modellhosting, men har ikke et behov som krever det ennå.",
   },
   {
     id: "sikkerhet-agentiske-systemer",
     name: "Sikkerhet i agentiske systemer",
     quadrant: "styring",
     ring: "vurderer",
-    since: MIGRATED_SINCE,
-    note: "Følger med på sikkerhetsrisiko i agentiske systemer før de tas i bruk i større skala.",
+    since: "2026-09", // antatt ut fra innlegget om dokumentasjon og KI (2026-09-07) – bekreft
+    note: "Følger sikkerhetsrisikoen før jeg tar agenter i bruk i større skala.",
   },
   {
     id: "eu-ai-act-i-praksis",
@@ -159,7 +162,7 @@ export const blips: Blip[] = [
     quadrant: "styring",
     ring: "vurderer",
     since: MIGRATED_SINCE,
-    note: "Vurderer hvordan regelverket slår ut i praksis før noe endres.",
+    note: "Vurderer hvordan regelverket slår ut i praksis før jeg endrer noe.",
   },
   {
     id: "webassembly-kubernetes",
@@ -167,7 +170,7 @@ export const blips: Blip[] = [
     quadrant: "plattform",
     ring: "vurderer",
     since: MIGRATED_SINCE,
-    note: "Følger med på WASM-runtime i Kubernetes som en mulig fremtidig retning.",
+    note: "Følger WASM-runtime i Kubernetes som mulig retning; ikke prøvd i praksis.",
   },
 
   // Ingen blips er lagt til "lagt-bort" (hold) ennå — det finnes ikke noe
@@ -188,10 +191,9 @@ export function blipsByRing(source: readonly Blip[] = blips): Record<Ring, Blip[
 
 /** Grupperer blips per kvadrant. Alle fire kvadranter er alltid til stede som nøkler. */
 export function blipsByQuadrant(source: readonly Blip[] = blips): Record<Quadrant, Blip[]> {
-  const grouped = Object.fromEntries(QUADRANTS.map((quadrant) => [quadrant, [] as Blip[]])) as Record<
-    Quadrant,
-    Blip[]
-  >;
+  const grouped = Object.fromEntries(
+    QUADRANTS.map((quadrant) => [quadrant, [] as Blip[]]),
+  ) as Record<Quadrant, Blip[]>;
   for (const blip of source) {
     grouped[blip.quadrant].push(blip);
   }
@@ -203,7 +205,9 @@ export function blipsByQuadrant(source: readonly Blip[] = blips): Record<Quadran
  * Dette er datagrunnlaget forsiden-stripen skal konsumere direkte.
  */
 export function testBlipsBySinceDesc(source: readonly Blip[] = blips): Blip[] {
-  return source.filter((blip) => blip.ring === "tester").sort((a, b) => b.since.localeCompare(a.since));
+  return source
+    .filter((blip) => blip.ring === "tester")
+    .sort((a, b) => b.since.localeCompare(a.since));
 }
 
 /** Den nyeste `since`-datoen blant alle blips, til bruk som "oppdatert"-dato. */

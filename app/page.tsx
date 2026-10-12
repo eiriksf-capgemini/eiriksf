@@ -4,11 +4,26 @@ import PostRow from "@/components/PostRow";
 import { Tags } from "@/components/Tag";
 import { getAllPosts } from "@/lib/posts";
 import { profile } from "@/content/cv";
-import { careerYears, stats } from "@/lib/cv";
+import { careerYears, formatYm, stats } from "@/lib/cv";
 import { site } from "@/lib/site";
+import { newestSince, testBlipsBySinceDesc } from "@/content/radar";
+
+/**
+ * Antall kolonner i "Prøver ut nå"-stripen følger antall blips, ikke en fast
+ * firedeling som Nøkkeltall – ringen kan ha 1–4 elementer, og klassenavnene
+ * må stå bokstavelig i kilden for at Tailwind skal generere dem.
+ */
+const TRYOUT_GRID_COLS: Record<number, string> = {
+  1: "grid-cols-1",
+  2: "grid-cols-1 md:grid-cols-2",
+  3: "grid-cols-1 md:grid-cols-3",
+  4: "grid-cols-1 md:grid-cols-4",
+};
 
 export default function Home() {
   const posts = getAllPosts().slice(0, 3);
+  const tryoutBlips = testBlipsBySinceDesc().slice(0, 4);
+  const tryoutUpdated = newestSince();
 
   const personJsonLd = {
     "@context": "https://schema.org",
@@ -90,6 +105,49 @@ export default function Home() {
 
       <hr className="hairline" />
 
+      {/* Prøver ut nå – speiler Nøkkeltall sin rammede grid, data fra content/radar.ts */}
+      {tryoutBlips.length > 0 && (
+        <>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <Label idx="01">Prøver ut nå</Label>
+            {tryoutUpdated && (
+              <span className="font-mono text-[12.5px] text-mute shrink-0">
+                oppdatert {formatYm(tryoutUpdated)}
+              </span>
+            )}
+          </div>
+          <div
+            className={[
+              "grid border border-line rounded-md overflow-hidden",
+              TRYOUT_GRID_COLS[tryoutBlips.length],
+            ].join(" ")}
+          >
+            {tryoutBlips.map((b, i) => (
+              <div
+                key={b.id}
+                className={[
+                  "p-5 px-6 border-line",
+                  i < tryoutBlips.length - 1 ? "border-b md:border-b-0" : "",
+                  i < tryoutBlips.length - 1 ? "md:border-r" : "",
+                ].join(" ")}
+              >
+                <div className="font-semibold text-[15px] text-ink">{b.name}</div>
+                <div className="text-ink-2 text-[13.5px] leading-snug mt-1.5">{b.note}</div>
+                <div className="font-mono text-[11px] text-mute mt-2.5">{formatYm(b.since)}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5">
+            <Link className="btn" href="/ki/">
+              Se hele radaren <span>→</span>
+            </Link>
+          </div>
+          {/* Skilleren hører til stripen: står den utenfor betingelsen, får
+              forsiden to nakne hairlines på rad den dagen tester-ringen er tom. */}
+          <hr className="hairline" />
+        </>
+      )}
+
       <div className="grid md:grid-cols-2 gap-12">
         <div>
           <Label idx="02">Siste innlegg</Label>
@@ -113,7 +171,12 @@ function Whoami() {
     ["rolle", "Platform / DevOps / Tech Lead"],
     ["fokus", "IDP · Kubernetes · GitOps · Sikkerhet"],
     ["stack", "Azure · AKS · ArgoCD · Backstage"],
-    ["status", <span key="status" className="text-accent-text">tilgjengelig for rådgivning</span>],
+    [
+      "status",
+      <span key="status" className="text-accent-text">
+        tilgjengelig for rådgivning
+      </span>,
+    ],
   ];
   return (
     <div className="border border-line border-t-[3px] border-t-accent rounded-md bg-bg-2 font-mono text-[12.5px] px-5 py-4 leading-[1.75] text-ink-2">
