@@ -126,6 +126,22 @@ export const stats = [
 ];
 
 /**
+ * Nøkkeltall for sidespalten på /cv (esf-7qk.3). Alle fire utledes av
+ * content/cv.ts, ingen av dem skrives for hånd: et tall som er tastet inn blir
+ * stående når dataene endrer seg, og esf-hnd.11 var nettopp det - år i
+ * bransjen hadde glidd fra virkeligheten.
+ */
+export const cvKeyFigures: { value: string; label: string }[] = [
+  { value: `${careerYears}+`, label: "år i bransjen" },
+  { value: String(employers.length), label: "arbeidsgivere" },
+  { value: String(sectorsByTime.length), label: "bransjer" },
+  {
+    value: String(certifications.length + education.length),
+    label: "sertifiseringer og grader",
+  },
+];
+
+/**
  * Felles akse for den samlede tidslinjen (esf-7qk.1). Flyttet hit fra de tre
  * grafikkene som før tegnet hver sin akse – nå finnes pos()-regnestykket og
  * femårsmerkene bare ett sted, konsumert av CareerTimeline alene.

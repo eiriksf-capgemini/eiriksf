@@ -61,10 +61,12 @@
   --color-accent-soft: var(--accent-soft);
   --color-accent-text: var(--accent-text);
 
-  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans:
+    var(--font-inter), system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-mono: var(--font-jetbrains-mono), "SF Mono", ui-monospace, Menlo, Consolas, monospace;
 
   --container-site: 1040px;
+  --container-cv: 1200px;
 }
 
 /* ---------- Base ---------- */
@@ -155,6 +157,12 @@ h3 {
   .wrap {
     @apply mx-auto px-7;
     max-width: var(--container-site);
+  }
+  /* /cv bærer en sidespalte ved siden av tidslinjen (esf-7qk.3) og trenger
+     derfor mer bredde enn resten av siden. Egen klasse i stedet for å heve
+     --container-site: forsiden og innleggene leses bedre smale. */
+  .wrap-cv {
+    max-width: var(--container-cv);
   }
   .label {
     @apply font-mono text-[11.5px] uppercase tracking-[0.14em] text-accent-text flex items-center gap-3 mb-5;
