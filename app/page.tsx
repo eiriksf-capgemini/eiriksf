@@ -109,7 +109,7 @@ export default function Home() {
       {tryoutBlips.length > 0 && (
         <>
           <div className="flex items-start justify-between gap-4 flex-wrap">
-            <Label idx="03">Prøver ut nå</Label>
+            <Label idx="01">Prøver ut nå</Label>
             {tryoutUpdated && (
               <span className="font-mono text-[12.5px] text-mute shrink-0">
                 oppdatert {formatYm(tryoutUpdated)}
