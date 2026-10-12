@@ -10,18 +10,21 @@ app/            ruter (/, /cv, /innlegg, /innlegg/[slug], /ki, 404, robots, site
 components/     Header, NavLinks, ThemeToggle, Footer, Label, Tag, PostRow, PostEntry
 content/
   cv.ts         CV-data (jobber, sertifiseringer, utdanning, områder)
-  ki.ts         teknologiradar, eksperimenter, prinsipper
+  radar.ts      teknologiradar som flat liste av blips (quadrant/ring/since)
+  ki.ts         eksperimenter, prinsipper
   innlegg/*.mdx ett innlegg per fil, med frontmatter
 lib/            site.ts (navn/lenker/meny), posts.ts (lesing av MDX), format.ts
 app/globals.css designtokens (lys/mørk), Tailwind-theme, komponentklasser, MDX-typografi
 docker/         nginx.conf
 public/         statiske filer – legg cv.pdf her for «Last ned PDF»
+assets/         kildemateriale som ikke serveres av siden (se assets/README.md)
 ```
 
 ## Kom i gang
 
 ```bash
-corepack enable          # gir deg pnpm
+corepack enable          # gir deg pnpm – på Node 25+ følger ikke corepack
+                         # med lenger, bruk npm i -g pnpm@10.12.1 i stedet
 pnpm install
 pnpm dev                 # http://localhost:3000
 pnpm typecheck && pnpm lint
@@ -78,10 +81,3 @@ pnpm verify:ui -- --path /cv/ --viewport 360x800
 
 Avhengighetene ligger i en egen manifest utenfor rot-`package.json` og i
 `.dockerignore`, slik at `docker build` aldri laster ned en nettleser.
-
-## Videre arbeid (forslag)
-
-- Legg `public/cv.pdf` (eksport fra CV-malen) så nedlastingsknappen virker
-- Selvhostede fonter (Inter + JetBrains Mono) via `next/font/local` om du vil bort fra systemfonter
-- Klientside-filtrering av innlegg på kategori
-- RSS-feed (`app/feed.xml/route.ts` med `dynamic = "force-static"`)
