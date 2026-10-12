@@ -1,52 +1,43 @@
 import { competence } from "@/content/cv";
-import { careerMonths, careerStart, formatSpans, spanMonths, toMonths } from "@/lib/cv";
+import { formatSpans } from "@/lib/cv";
 
 /**
- * Kompetanse som tid i stedet for terningkast. Hvert område tegnes på samme
- * akse som resten av karrieren (2007 → nå), så et område som har ligget
- * brakk og blitt tatt opp igjen vises som to segmenter – ikke som ett tall.
+ * Fagområder som liste med årstall (esf-7qk.5).
  *
- * Sporet er aria-hidden; skjermleser får spennene som tekst i samme rad,
- * så tallene finnes uavhengig av grafikken.
+ * Dette var tidligere et eget minispor per område, tegnet på samme akse som
+ * resten av karrieren. Den aksen finnes allerede én gang på siden, i
+ * CareerTimeline, og i sidespalten var sporet ~230px bredt for nitten år -
+ * et ettårig spenn ble da rundt tolv piksler og sa ingenting. Årstallene
+ * sier det presist på mindre plass.
+ *
+ * Den fylte prikken betyr "i bruk nå", altså at området har et spenn uten
+ * sluttdato. Den er ikke en vurdering: terningkastet på 1-5 ble fjernet med
+ * vilje i esf-hnd.5 og skal ikke tilbake i noen form.
  */
 export default function CompetenceSpans() {
-  const start = toMonths(careerStart);
-
   return (
-    <table className="w-full border-collapse">
-      <caption className="sr-only">
-        Fagområder med periodene de har vært i aktiv bruk, fra {careerStart.slice(0, 4)} til i dag
-      </caption>
-      <tbody>
-        {competence.map((c) => (
-          <tr key={c.name} className="border-t border-line">
-            <td className="pt-2.5 pb-3">
-              {/* Ikke nowrap og ikke én linje: "2015–2015 · 2018–2019 ·
-                  2021–2023 · 2026–nå" har en min-content-bredde som sprenger
-                  360px-viewporten og dytter hele sidelayouten utenfor. */}
-              <div className="flex flex-wrap justify-between items-baseline gap-x-3 gap-y-0.5 min-w-0">
-                <span className="text-[13.5px]">{c.name}</span>
-                <span className="font-mono text-[11px] text-mute">{formatSpans(c.spans)}</span>
-              </div>
-              <div aria-hidden className="relative h-1.5 mt-2 rounded-sm bg-bg-2">
-                {c.spans.map((s) => (
-                  <span
-                    key={s.from}
-                    className={[
-                      "chart-bar absolute inset-y-0 rounded-sm",
-                      s.to === null ? "bg-accent" : "bg-accent/55",
-                    ].join(" ")}
-                    style={{
-                      left: `${((toMonths(s.from) - start) / careerMonths) * 100}%`,
-                      width: `${Math.max((spanMonths(s.from, s.to) / careerMonths) * 100, 1.5)}%`,
-                    }}
-                  />
-                ))}
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ul>
+      {competence.map((c) => {
+        const inUse = c.spans.some((s) => s.to === null);
+        return (
+          <li key={c.name} className="border-t border-line py-2">
+            <div className="flex items-baseline gap-2">
+              <span
+                aria-hidden
+                className={[
+                  "shrink-0 w-1.5 h-1.5 rounded-full translate-y-[-1px]",
+                  inUse ? "bg-accent" : "bg-line-2",
+                ].join(" ")}
+              />
+              <span className="text-[13.5px] leading-[1.35]">{c.name}</span>
+              {inUse && <span className="sr-only">, i bruk nå</span>}
+            </div>
+            <div className="font-mono text-[11px] text-mute mt-1 ml-3.5 leading-[1.4]">
+              {formatSpans(c.spans)}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
