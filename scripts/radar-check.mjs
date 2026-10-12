@@ -9,7 +9,7 @@
 // "erasable syntax". Derfor kan Node laste den direkte som et ES-modul med
 // typene strippet bort (stabilt i Node >=22.18/23.6, og eksplisitt slått på
 // her med --experimental-strip-types for å virke likt på tvers av Node-
-// versjoner, inkl. node:22-alpine i Dockerfile). Det er langt mer robust enn
+// versjoner, inkl. node-imaget Dockerfile bygger på). Det er langt mer robust enn
 // å regex-parse kildekoden selv, og gir oss de faktiske, evaluerte verdiene
 // (inkludert ev. beregnede felter) i stedet for en tekstlig tilnærming.
 //
