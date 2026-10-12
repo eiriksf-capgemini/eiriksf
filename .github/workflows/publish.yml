@@ -14,31 +14,45 @@ permissions: {}
 # på, kastes de mellomliggende før de starter, og de commitene får aldri et
 # sha-tagget image. Det skjedde to ganger 10. og 12. oktober. Nå står hver
 # commit i sin egen lane og blir bygget; at latest ikke kan gå bakover løses
-# av stale-sjekken under i stedet for av køen.
+# av stale-sjekken i merge-jobben under i stedet for av køen.
 concurrency:
   group: publish-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
-  publish-ghcr:
-    name: Publish image to GHCR
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
+  # Én byggejobb per arkitektur, hver på en runner som faktisk har den
+  # arkitekturen - ikke QEMU-emulering på en amd64-runner. arm64-leggen var
+  # den dyre delen (esf-07k.7): med varm buildx-cache tok hele den gamle
+  # ett-jobbs workflowen ~24 min (run 38219433019, 2047616), men med kald
+  # cache rakk den ikke bli ferdig på 45 min (run 38215750715 for b6cf83a,
+  # drept midt i "Build and push" - den commiten fikk aldri noe image).
+  # GitHub tilbyr nå arm64-hostede runnere (ubuntu-24.04-arm), gratis og
+  # ubegrenset for offentlige repoer, generelt tilgjengelig siden august 2025.
+  # eiriksf-capgemini/eiriksf er offentlig, så arm64 bygges native her i
+  # stedet for under emulering (esf-07k.15).
+  #
+  # Hver jobb pusher bare sitt eget enkelt-arkitektur-image by digest, uten
+  # tag. Merge-jobben under er det eneste stedet "latest" og
+  # "sha-<kort-sha>" faktisk settes, slik at stale-sjekken mot main forblir
+  # det ene stedet den vurderingen gjøres - akkurat som før esf-07k.15, bare
+  # flyttet til jobben som faktisk lager den ferdige manifest-listen.
+  build-amd64:
+    name: Build linux/amd64
+    runs-on: ubuntu-24.04
+    # Provisorisk: QEMU er borte, så dette skal bli raskere enn den gamle
+    # kombinerte jobben, men tallet er ikke målt ennå for den nye strukturen.
+    # Juster ned når K1 er bekreftet med en ekte kjøring.
+    timeout-minutes: 25
     permissions:
       contents: read # checkout
-      packages: write # push imaget til GHCR
+      packages: write # push image by digest til GHCR
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Ingen grunn til å la GITHUB_TOKEN bli liggende i git-konfigen på
-          # runneren; ingenting her pusher tilbake.
           persist-credentials: false
-
-      # Needed to build the linux/arm64 leg below under QEMU emulation; the
-      # runner itself is amd64.
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
@@ -50,13 +64,124 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Tags: "latest" (moves with main) and "sha-<short-sha>" (immutable,
-      # traceable back to the exact commit). metadata-action lowercases the
-      # image name automatically, which GHCR requires.
+      # Bare labels herfra - tags (latest/sha) bestemmes i merge-jobben, ikke
+      # per arkitektur, så denne jobben trenger ikke stale-sjekken mot main.
+      - name: Compute labels
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      # push-by-digest: ingen tag settes her, bare selve laget. digest-output
+      # under er det merge-jobben limer sammen med arm64-digesten til én
+      # manifest-liste med imagetools create.
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          cache-from: type=gha,scope=amd64
+          cache-to: type=gha,mode=max,scope=amd64
+          labels: ${{ steps.meta.outputs.labels }}
+          # Provenance slås av med vilje. Med push-by-digest ville buildx
+          # pushet et attestasjons-manifest per arkitektur, men
+          # "imagetools create" bygger indeksen av de to image-digestene vi
+          # navngir og tar ikke attestasjonene med videre. Resultatet ville
+          # vært attestasjoner som ligger igjen i registeret uten at noe
+          # peker på dem - verre enn ingen, fordi de ser ut som dekning man
+          # ikke har. Dagens image HAR provenance (to unknown/unknown-
+          # manifester i indeksen), så dette er et bevisst tap ved
+          # omleggingen, og esf-07k.19 tar det tilbake.
+          provenance: false
+          outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
+
+  build-arm64:
+    name: Build linux/arm64
+    # Native arm64-runner (GA for offentlige repoer siden august 2025) i
+    # stedet for QEMU-emulering på en amd64-runner. Se kommentaren over
+    # build-amd64 for hele bakgrunnen.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    permissions:
+      contents: read # checkout
+      packages: write # push image by digest til GHCR
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute labels
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/arm64
+          cache-from: type=gha,scope=arm64
+          cache-to: type=gha,mode=max,scope=arm64
+          labels: ${{ steps.meta.outputs.labels }}
+          # Provenance slås av med vilje. Med push-by-digest ville buildx
+          # pushet et attestasjons-manifest per arkitektur, men
+          # "imagetools create" bygger indeksen av de to image-digestene vi
+          # navngir og tar ikke attestasjonene med videre. Resultatet ville
+          # vært attestasjoner som ligger igjen i registeret uten at noe
+          # peker på dem - verre enn ingen, fordi de ser ut som dekning man
+          # ikke har. Dagens image HAR provenance (to unknown/unknown-
+          # manifester i indeksen), så dette er et bevisst tap ved
+          # omleggingen, og esf-07k.19 tar det tilbake.
+          provenance: false
+          outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
+
+  # Limer sammen de to platform-digestene til én manifest-liste og setter
+  # tagene. needs: [build-amd64, build-arm64] er selve garantien for K3: denne
+  # jobben kan ikke starte før begge arkitekturene har pushet sin digest, så
+  # det finnes ingen kjørevei som publiserer en manifest-liste med bare én av
+  # dem - verken fordi den andre jobben feilet (needs stopper jobben) eller
+  # fordi den bare er treg (needs venter).
+  merge:
+    name: Merge manifest and tag
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    needs: [build-amd64, build-arm64]
+    permissions:
+      packages: write # push manifest-listen og tagene til GHCR
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       # Er denne commiten fortsatt toppen av main? Kjører to bygg parallelt i
       # hver sin lane, skal det eldste publisere sitt sha-tag, men ikke dra
       # latest bakover. Sammenligningen gjøres mot remote, ikke mot det vi
-      # sjekket ut.
+      # sjekket ut - denne jobben gjør ingen checkout (den trenger ikke
+      # byggekonteksten), så GITHUB_SHA er alt vi har lokalt, og git ls-remote
+      # trenger ingen lokal .git for å spørre GitHub om hvor main faktisk
+      # peker nå.
       - name: Er denne commiten fortsatt main?
         id: head
         run: |
@@ -69,6 +194,9 @@ jobs:
             echo "main står nå på $remote_head; publiserer bare sha-tag og lar latest være."
           fi
 
+      # Tags: "latest" (moves with main) and "sha-<short-sha>" (immutable,
+      # traceable back to the exact commit). metadata-action lowercases the
+      # image name automatically, which GHCR requires.
       - name: Compute tags
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
@@ -78,32 +206,33 @@ jobs:
             type=raw,value=latest,enable=${{ steps.head.outputs.latest == 'true' }}
             type=sha,prefix=sha-,format=short
 
-      # linux/amd64,linux/arm64: det publiserte imaget må kunne kjøres
-      # direkte på begge vertsarkitekturer (esf-07k.7). arm64-leggen bygges
-      # under QEMU-emulering på en amd64-runner, og det er den dyre delen.
+      # imagetools create limer sammen de to platform-digestene til én
+      # manifest-liste og setter tagene fra steget over - selve laget som gjør
+      # et flerarkitektur-image av to enkelt-arkitektur-pushes.
+      # DOCKER_METADATA_OUTPUT_JSON kommer fra metadata-action-steget over,
+      # eksportert til $GITHUB_ENV automatisk.
       #
-      # Timeouten har måttet opp to ganger. Første forsøk var 15 minutter,
-      # basert på en lokal måling på Apple Silicon (~2,3x for den emulerte
-      # leggen); på en ekte amd64-runner ble jobben avbrutt uten å bli ferdig.
-      # 45 minutter holdt så lenge cachen var varm, men 12. oktober byttet vi
-      # base-image fra node:22 til node:26 og nginx 1.27 til 1.29 samtidig.
-      # Da var hele cachen ugyldig, og kjøringen for b6cf83a ble drept på
-      # 45m37s midt i Build and push - den commiten fikk aldri noe image.
-      # Derfor 90: en kald multi-arch-build må få bli ferdig, for det er
-      # nettopp når base-imaget endrer seg at man vil ha imaget.
-      #
-      # Den egentlige kuren er å bygge arm64 på en arm64-runner i stedet for
-      # under QEMU. Det er en større omlegging og ligger i esf-07k.15.
-      #
-      # Jobben kjører bare på push til main og har ingen pull_request-trigger,
-      # så den blokkerer ingen PR-tilbakemelding uansett hvor lang den er.
-      - name: Build and push
-        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      # Digestene leses inn via env i stedet for ${{ needs.*.outputs.digest }}
+      # direkte i run-blokken, slik zizmor sin template-injection-sjekk
+      # anbefaler - verdiene er bare docker build-push-action sine egne
+      # digest-outputs, men indirekte via env unngår enhver tvil.
+      - name: Create and push manifest list
+        env:
+          DIGEST_AMD64: ${{ needs.build-amd64.outputs.digest }}
+          DIGEST_ARM64: ${{ needs.build-arm64.outputs.digest }}
+        run: |
+          # shellcheck disable=SC2046 # ordsplittingen er med vilje - jq
+          # bygger en "-t tag1 -t tag2 ..."-streng som skal bli flere
+          # separate argumenter til imagetools create.
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            "ghcr.io/${GITHUB_REPOSITORY}@${DIGEST_AMD64}" \
+            "ghcr.io/${GITHUB_REPOSITORY}@${DIGEST_ARM64}"
+
+      # K2 (esf-07k.15): bekreft at det som faktisk ble publisert annonserer
+      # begge arkitekturene, ikke bare anta det fordi imagetools create ikke
+      # feilet.
+      - name: Inspect published manifest
+        run: |
+          tag="$(jq -r '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")"
+          docker buildx imagetools inspect "$tag"
