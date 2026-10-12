@@ -92,12 +92,23 @@ function place(): Placed[] {
 }
 
 /**
- * Uthevingen av en blip når legendeposten har hover/fokus er ren CSS,
- * generert her fra samme `placed`-liste som selve nummereringen (esf-d02.2).
- * Ingen React-state: `n` er den delte nøkkelen, og `:has()` gjør koblingen i
+ * Uthevingen av en blip når legendeposten peres på er ren CSS, generert her
+ * fra samme `placed`-liste som selve nummereringen (esf-d02.2). Ingen
+ * React-state: `n` er den delte nøkkelen, og `:has()` gjør koblingen i
  * nettleseren i stedet for i en klikk-handler. Størrelsen på sirkelen endres
  * i tillegg til en outline, slik at uthevingen ikke hviler på farge alene
  * (fungerer likt i lys og mørk modus siden `var(--ink)` bytter med temaet).
+ *
+ * Bevisst bare pekerinteraksjon. Et tidlig forsøk ga hver legendepost
+ * tabIndex={0} slik at tastaturbrukere fikk samme utheving, men tabindex kan
+ * ikke gjøres responsivt uten JavaScript: det la 16 tabstopp på ALLE
+ * bredder, også under md der radaren er skjult og uthevingen ikke finnes.
+ * Målt på /ki ved 360px gikk tabstoppene fra 11 til 27 - en tastaturbruker
+ * på mobil måtte da tabbe gjennom seksten poster som ikke gjør noe synlig.
+ * Legenden bærer uansett all informasjonen som tekst, og SVG-en er
+ * aria-hidden, så ingenting går tapt ved å la dette være en ren
+ * pekerforbedring. :focus-within står igjen i selektoren med vilje: får en
+ * legendepost en lenke senere, virker uthevingen for tastatur uten videre.
  */
 function dotHighlightCss(placed: Placed[]) {
   return placed
@@ -132,7 +143,11 @@ export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
         className="hidden md:block float-right w-[420px] aspect-square [shape-outside:circle(50%)_border-box] [shape-margin:1.5rem]"
         aria-hidden
       >
-        <svg viewBox={`-30 -26 ${SIZE + 60} ${SIZE + 52}`} className="w-full h-full" role="presentation">
+        <svg
+          viewBox={`-30 -26 ${SIZE + 60} ${SIZE + 52}`}
+          className="w-full h-full"
+          role="presentation"
+        >
           {RINGS.map((r, i) => (
             <circle
               key={r}
@@ -218,7 +233,6 @@ export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
                   <li
                     key={p.id}
                     data-blip={p.n}
-                    tabIndex={0}
                     className="text-[14px] leading-[1.45] flex gap-2.5 rounded-sm"
                   >
                     <span className="font-mono text-[11px] text-mute pt-[3px] w-5 shrink-0 text-right">
@@ -226,7 +240,10 @@ export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
                     </span>
                     <span>
                       <span className="font-medium">{p.name}</span>
-                      <span className="font-mono text-[11px] text-mute"> · {QUADRANT_LABEL[p.quadrant]}</span>
+                      <span className="font-mono text-[11px] text-mute">
+                        {" "}
+                        · {QUADRANT_LABEL[p.quadrant]}
+                      </span>
                       <br />
                       <span className="text-ink-2">{p.note}</span>
                     </span>
