@@ -36,13 +36,20 @@ jobs:
   # "sha-<kort-sha>" faktisk settes, slik at stale-sjekken mot main forblir
   # det ene stedet den vurderingen gjøres - akkurat som før esf-07k.15, bare
   # flyttet til jobben som faktisk lager den ferdige manifest-listen.
+  # Timeoutene er satt etter måling, ikke på følelsen. Første kjøring av dette
+  # oppsettet (run 38236579068, commit 853adf3) hadde kald cache - scopene
+  # amd64 og arm64 var aldri fylt - og brukte 1m45s på amd64, 1m54s på arm64
+  # og 15s på merge. Til sammenligning brukte QEMU-bygget 24 minutter med varm
+  # cache og ble drept på 45m37s med kald. 15 minutter gir altså rundt åtte
+  # ganger hodet over det dyreste tilfellet vi har målt; blir det for trangt,
+  # er det et signal om at noe annet er galt.
   build-amd64:
     name: Build linux/amd64
     runs-on: ubuntu-24.04
     # Provisorisk: QEMU er borte, så dette skal bli raskere enn den gamle
     # kombinerte jobben, men tallet er ikke målt ennå for den nye strukturen.
     # Juster ned når K1 er bekreftet med en ekte kjøring.
-    timeout-minutes: 25
+    timeout-minutes: 15
     permissions:
       contents: read # checkout
       packages: write # push image by digest til GHCR
@@ -102,7 +109,7 @@ jobs:
     # stedet for QEMU-emulering på en amd64-runner. Se kommentaren over
     # build-amd64 for hele bakgrunnen.
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 25
+    timeout-minutes: 15
     permissions:
       contents: read # checkout
       packages: write # push image by digest til GHCR
@@ -160,7 +167,7 @@ jobs:
   merge:
     name: Merge manifest and tag
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 5
     needs: [build-amd64, build-arm64]
     permissions:
       packages: write # push manifest-listen og tagene til GHCR
