@@ -84,6 +84,16 @@ jobs:
           cache-from: type=gha,scope=amd64
           cache-to: type=gha,mode=max,scope=amd64
           labels: ${{ steps.meta.outputs.labels }}
+          # Provenance slås av med vilje. Med push-by-digest ville buildx
+          # pushet et attestasjons-manifest per arkitektur, men
+          # "imagetools create" bygger indeksen av de to image-digestene vi
+          # navngir og tar ikke attestasjonene med videre. Resultatet ville
+          # vært attestasjoner som ligger igjen i registeret uten at noe
+          # peker på dem - verre enn ingen, fordi de ser ut som dekning man
+          # ikke har. Dagens image HAR provenance (to unknown/unknown-
+          # manifester i indeksen), så dette er et bevisst tap ved
+          # omleggingen, og esf-07k.19 tar det tilbake.
+          provenance: false
           outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
 
   build-arm64:
@@ -129,6 +139,16 @@ jobs:
           cache-from: type=gha,scope=arm64
           cache-to: type=gha,mode=max,scope=arm64
           labels: ${{ steps.meta.outputs.labels }}
+          # Provenance slås av med vilje. Med push-by-digest ville buildx
+          # pushet et attestasjons-manifest per arkitektur, men
+          # "imagetools create" bygger indeksen av de to image-digestene vi
+          # navngir og tar ikke attestasjonene med videre. Resultatet ville
+          # vært attestasjoner som ligger igjen i registeret uten at noe
+          # peker på dem - verre enn ingen, fordi de ser ut som dekning man
+          # ikke har. Dagens image HAR provenance (to unknown/unknown-
+          # manifester i indeksen), så dette er et bevisst tap ved
+          # omleggingen, og esf-07k.19 tar det tilbake.
+          provenance: false
           outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
 
   # Limer sammen de to platform-digestene til én manifest-liste og setter
