@@ -91,16 +91,27 @@ jobs:
           cache-from: type=gha,scope=amd64
           cache-to: type=gha,mode=max,scope=amd64
           labels: ${{ steps.meta.outputs.labels }}
-          # Provenance slås av med vilje. Med push-by-digest ville buildx
-          # pushet et attestasjons-manifest per arkitektur, men
-          # "imagetools create" bygger indeksen av de to image-digestene vi
-          # navngir og tar ikke attestasjonene med videre. Resultatet ville
-          # vært attestasjoner som ligger igjen i registeret uten at noe
-          # peker på dem - verre enn ingen, fordi de ser ut som dekning man
-          # ikke har. Dagens image HAR provenance (to unknown/unknown-
-          # manifester i indeksen), så dette er et bevisst tap ved
-          # omleggingen, og esf-07k.19 tar det tilbake.
-          provenance: false
+          # Provenance er PÅ igjen (esf-07k.19). Antagelsen om at den måtte
+          # stå av var feil, og testet lokalt mot en registry i stedet for
+          # antatt: med provenance og push-by-digest sammen blir det
+          # digest-steget under faktisk rapporterer IKKE enkelt-arkitektur-
+          # manifestet, men en liten indeks med to barn - selve image-
+          # manifestet og et attestasjons-manifest (annotert
+          # vnd.docker.reference.type: attestation-manifest, pekende
+          # tilbake på image-manifestet via vnd.docker.reference.digest).
+          # "imagetools create" i merge-jobben kopierer BARNA til en index-
+          # kilde inn i den nye indeksen i stedet for å flate den til én
+          # oppføring - verifisert ved å bygge nøyaktig dette oppsettet mot
+          # en lokal registry: å gi den de to indeks-digestene ga en
+          # sammenslått indeks med alle fire manifestene (to plattformer, to
+          # attestasjoner), identisk i form med four-manifest-bildet fra før
+          # splitten. Faren fra kommentaren som sto her er reell, men gjelder
+          # bare hvis merge-jobben hadde referert til det INDRE image-
+          # manifestet i stedet for denne indeksen - det ble også verifisert
+          # lokalt (da forsvinner attestasjonen fra den publiserte indeksen,
+          # men ligger igjen ubrukt i registeret). Så lenge merge-jobben
+          # bruker steps.build.outputs.digest uendret - som den gjorde før
+          # denne endringen - er det nettopp indeks-digesten den får.
           outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
 
   build-arm64:
@@ -146,16 +157,8 @@ jobs:
           cache-from: type=gha,scope=arm64
           cache-to: type=gha,mode=max,scope=arm64
           labels: ${{ steps.meta.outputs.labels }}
-          # Provenance slås av med vilje. Med push-by-digest ville buildx
-          # pushet et attestasjons-manifest per arkitektur, men
-          # "imagetools create" bygger indeksen av de to image-digestene vi
-          # navngir og tar ikke attestasjonene med videre. Resultatet ville
-          # vært attestasjoner som ligger igjen i registeret uten at noe
-          # peker på dem - verre enn ingen, fordi de ser ut som dekning man
-          # ikke har. Dagens image HAR provenance (to unknown/unknown-
-          # manifester i indeksen), så dette er et bevisst tap ved
-          # omleggingen, og esf-07k.19 tar det tilbake.
-          provenance: false
+          # Provenance er PÅ igjen (esf-07k.19) - se kommentaren i
+          # build-amd64 for hele begrunnelsen og hva som faktisk ble testet.
           outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
 
   # Limer sammen de to platform-digestene til én manifest-liste og setter
