@@ -91,14 +91,30 @@ function place(): Placed[] {
   });
 }
 
-export default function TechRadar() {
+export default function TechRadar({ intro }: { intro?: React.ReactNode }) {
   const placed = place();
   const byRing = (r: Ring) => placed.filter((p) => p.ring === r);
 
   return (
-    <div>
-      <div className="hidden md:flex justify-center" aria-hidden>
-        <svg viewBox={`-30 -26 ${SIZE + 60} ${SIZE + 52}`} className="w-full max-w-[600px] h-auto" role="presentation">
+    <div className="flow-root">
+      {/* float: right + shape-outside gjør at ingressen og første legenderad
+          flyter langs sirkelen i stedet for en firkant (esf-d02.1). Kun
+          md: og opp - under md er radaren skjult som før, se den delte
+          kommentaren i place() om hvorfor legenden er det eneste innholdet
+          der. aspect-square sikrer at boksen er kvadratisk slik at
+          circle(50%) blir en sirkel innskrevet i boksen, ikke en ellipse.
+          Shape-referansen er eksplisitt satt til border-box: uten den bruker
+          shape-outside margin-box som standard, og en asymmetrisk
+          bunnmarg på selve float-elementet ville da gjort boksen (og dermed
+          sirkelen) høyere enn den er bred - verifisert med et skript som
+          fylte ingressen med lang tekst og målte at linjene likevel stoppet
+          ved boksens venstrekant i stedet for å følge kurven. Avstanden
+          under floaten løses i stedet med mt-7 på legendblokken som følger. */}
+      <div
+        className="hidden md:block float-right w-[420px] aspect-square [shape-outside:circle(50%)_border-box] [shape-margin:1.5rem]"
+        aria-hidden
+      >
+        <svg viewBox={`-30 -26 ${SIZE + 60} ${SIZE + 52}`} className="w-full h-full" role="presentation">
           {RINGS.map((r, i) => (
             <circle
               key={r}
@@ -161,12 +177,19 @@ export default function TechRadar() {
         </svg>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-x-10 gap-y-7 md:mt-8">
+      {intro}
+
+      {/* Vanlig blokkflyt på md+ (ikke grid), slik at ringene kan flyte
+          rundt sirkelen over - et grid åpner en ny blokk-formateringskontekst
+          og ville lagt seg som en firkant ved siden av floaten i stedet
+          (docs/design-review-2026-10-12.md §3). Under md er det fortsatt
+          to kolonner fra sm, uendret fra før. */}
+      <div className="grid sm:grid-cols-2 gap-x-10 gap-y-7 md:block mt-7">
         {RINGS.map((r) => {
           const items = byRing(r);
           if (items.length === 0) return null;
           return (
-            <section key={r}>
+            <section key={r} className="md:mb-7 md:last:mb-0">
               {/* h2, ikke h3: /ki har bare h1 over denne, og et hopp til h3 er
                   et overskriftsnivå-brudd (fanget av Lighthouse, ikke av axe). */}
               <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent-text mb-2">
