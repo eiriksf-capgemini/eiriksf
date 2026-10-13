@@ -73,10 +73,6 @@ export const profile = {
    *  CV-dokumentet ble generert, slik at siden og PDF-en oppgir samme
    *  gjennomgang i stedet for to datoer leseren må tolke hver for seg. */
   updated: "2026-10-12",
-  /** Når public/cv.pdf sist ble byttet ut. Selve PDF-en har ingen dato i seg,
-   *  så siden må oppgi den – ellers lover nedlastingen en ferskhet vi ikke
-   *  kan stå inne for (esf-hnd.9). Oppdater denne når PDF-en byttes. */
-  pdfUpdated: "2026-10-12",
   intro:
     "Senior DevOps Engineer og Tech Lead med bred erfaring innen plattformutvikling, skyarkitektur, systemintegrasjon og Application Lifecycle Management.",
   about: [
