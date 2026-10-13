@@ -6,6 +6,7 @@ import Label from "@/components/Label";
 import SectorBars from "@/components/SectorBars";
 import { languages, profile } from "@/content/cv";
 import { careerStart, cvKeyFigures } from "@/lib/cv";
+import { pdfUpdated } from "@/lib/pdf-meta.generated";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: "CV", description: profile.intro };
@@ -41,7 +42,7 @@ export default function CvPage() {
             <p className="font-mono text-[11.5px] text-mute mt-2.5 leading-[1.5]">
               Alle detaljer fra hvert oppdrag ligger i PDF-en
               <br />
-              oppdatert {profile.pdfUpdated}
+              oppdatert {pdfUpdated}
             </p>
           </div>
 

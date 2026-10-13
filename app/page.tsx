@@ -170,12 +170,20 @@ export default function Home() {
   );
 }
 
+/**
+ * Rollen leses fra lib/site.ts, ikke skrevet av her. Boksen sa tidligere
+ * "Platform / DevOps / Tech Lead" mens heroen rett over sa Senior Managing
+ * Consultant: to svar på samme spørsmål innenfor én skjerm, og Tech Lead var
+ * tittelen hos Equinor til 2023. Stacken er døpt om til bakgrunn, fordi det
+ * er verktøyene fra forrige oppdrag og ikke det dagens rådgivning består i
+ * (esf-hnd.13).
+ */
 function Whoami() {
   const rows: [string, React.ReactNode][] = [
     ["navn", site.name],
-    ["rolle", "Platform / DevOps / Tech Lead"],
+    ["rolle", `${site.title}, ${site.employer}`],
     ["fokus", "IDP · Kubernetes · GitOps · Sikkerhet"],
-    ["stack", "Azure · AKS · ArgoCD · Backstage"],
+    ["bakgrunn", "Azure · AKS · ArgoCD · Backstage"],
     [
       "status",
       <span key="status" className="text-accent-text">
