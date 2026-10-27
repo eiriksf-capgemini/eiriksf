@@ -59,7 +59,7 @@ COPY . .
 RUN pnpm build
 
 # ---------- 3. Runtime: kun nginx + statiske filer ----------
-FROM nginxinc/nginx-unprivileged:1.29-alpine-slim AS runtime
+FROM nginxinc/nginx-unprivileged:1.31-alpine-slim AS runtime
 # Snippeten legges rett i /etc/nginx, ikke i en ny underkatalog: COPY --chmod
 # setter samme modus på kataloger den oppretter, og 644 på en katalog betyr
 # ingen x-bit, altså ingen gjennomgang - nginx som uprivilegert bruker fikk
